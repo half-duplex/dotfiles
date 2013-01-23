@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WINEPREFIX="$HOME/.local/share/wineprefixes/steam2"
+WINEPREFIX="$HOME/.local/share/wineprefixes/steam"
 export WINEPREFIX
 WINEARCH=win32
 export WINEARCH
