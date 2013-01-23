@@ -1,0 +1,22 @@
+#!/bin/bash
+
+WINEPREFIX="~/.local/share/wineprefixes/steam2"
+WINEARCH=win32
+
+case $1 in
+    run)
+        shift
+        exec $@
+        ;;
+    install)
+        #winetricks --no-isolate steam
+        winetricks corefonts
+        wget -o /dev/null -O /tmp/SteamInstall.msi http://cdn.steampowered.com/download/SteamInstall.msi
+        WINEDEBUG="fixme-all" wine msiexec /i /tmp/SteamInstall.msi
+        ;;
+    run|*)
+        #WINEDEBUG="fixme-all" exec wine "C:\Program Files\Steam\steam.exe" -no-dwrite
+        WINEDEBUG="fixme-all" exec wine "C:\Program Files (x86)\Steam\steam.exe" -no-dwrite
+        ;;
+esac
+
