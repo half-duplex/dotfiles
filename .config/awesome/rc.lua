@@ -491,6 +491,7 @@ do
   {
     "redshift-my",
     "nm-applet",
+    "xrdb /home/mal/.Xresources",
   }
 
   for _,i in pairs(cmds) do
