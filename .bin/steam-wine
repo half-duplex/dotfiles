@@ -1,9 +1,7 @@
 #!/bin/bash
 
-WINEPREFIX="$HOME/.local/share/wineprefixes/steam"
-export WINEPREFIX
-WINEARCH=win32
-export WINEARCH
+export WINEPREFIX="$HOME/.local/share/wineprefixes/steam"
+export WINEARCH=win32
 
 case $1 in
     run)
@@ -22,9 +20,9 @@ case $1 in
 "FontSmoothing"="2"
 "FontSmoothingType"=dword:00000002
 "FontSmoothingGamma"=dword:00000578
-"FontSmoothingOrientation"=dword:00000001 
+"FontSmoothingOrientation"=dword:00000001
 EOF
-        env WINEDEBUG="fixme-all" exec wine regedit fontfix.reg 
+        env WINEDEBUG="fixme-all" exec wine regedit fontfix.reg
         ;;
     "")
         WINEDEBUG="fixme-all" exec wine "C:\Program Files\Steam\steam.exe" -no-dwrite
