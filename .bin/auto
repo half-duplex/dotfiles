@@ -1,0 +1,21 @@
+#!/bin/bash -ex
+
+firefox &
+sleep 3
+
+thunderbird &
+sleep 3
+
+pidgin &
+skype &
+teamspeak3 &
+xchat &
+spotify &
+torchat &
+
+xterm -bgcolor black -fgcolor green -e "ses" &
+
+bitcoin-qt &
+#redshift-my &
+tomboy &
+
