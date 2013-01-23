@@ -14,7 +14,7 @@ spotify &
 torchat &
 torbrowser &
 
-xterm -bg black -fg green -e "ses" &
+xterm -e "ses" &
 
 bitcoin-qt &
 #redshift-my & # in rc.lua
