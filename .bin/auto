@@ -12,10 +12,11 @@ teamspeak3 &
 xchat &
 spotify &
 torchat &
+torbrowser &
 
-xterm -bgcolor black -fgcolor green -e "ses" &
+xterm -bg black -fg green -e "ses" &
 
 bitcoin-qt &
-#redshift-my &
+#redshift-my & # in rc.lua
 tomboy &
 
