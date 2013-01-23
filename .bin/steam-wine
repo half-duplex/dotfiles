@@ -1,7 +1,9 @@
 #!/bin/bash
 
-WINEPREFIX="~/.local/share/wineprefixes/steam2"
+WINEPREFIX="$HOME/.local/share/wineprefixes/steam2"
+export WINEPREFIX
 WINEARCH=win32
+export WINEARCH
 
 case $1 in
     run)
@@ -14,9 +16,25 @@ case $1 in
         wget -o /dev/null -O /tmp/SteamInstall.msi http://cdn.steampowered.com/download/SteamInstall.msi
         WINEDEBUG="fixme-all" wine msiexec /i /tmp/SteamInstall.msi
         ;;
-    run|*)
-        #WINEDEBUG="fixme-all" exec wine "C:\Program Files\Steam\steam.exe" -no-dwrite
-        WINEDEBUG="fixme-all" exec wine "C:\Program Files (x86)\Steam\steam.exe" -no-dwrite
+    fixfonts)
+        cat >/tmp/steamfixfonts.reg <<EOF
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"FontSmoothing"="2"
+"FontSmoothingType"=dword:00000002
+"FontSmoothingGamma"=dword:00000578
+"FontSmoothingOrientation"=dword:00000001 
+EOF
+        env WINEDEBUG="fixme-all" exec wine regedit fontfix.reg 
+        ;;
+    "")
+        WINEDEBUG="fixme-all" exec wine "C:\Program Files\Steam\steam.exe" -no-dwrite
+        ;;
+    help|*)
+        echo "Run with no arguments to start steam, OR one of:
+            run [command]       Run [command] for steam prefix
+            install             Download and install steam
+            fixfonts            Apply patch to make fonts look better
+            help                This garbage"
         ;;
 esac
 
