@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd ~/.bin/usr/local/
+exec java -Xmx2G -Xincgc -jar minecraft.jar
