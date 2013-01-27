@@ -4,6 +4,13 @@ set tabstop=4
 set softtabstop=4
 set shiftwidth=4
 set expandtab
+set number
+set tw=79
+set nowrap
+set fo-=t
+"set colorcolumn=80
+
+" Use only real tabs in makefiles
 autocmd FileType make setlocal noexpandtab
 
 set pastetoggle=<F2>

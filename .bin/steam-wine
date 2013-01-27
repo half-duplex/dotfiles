@@ -6,7 +6,7 @@ export WINEARCH=win32
 case $1 in
     run)
         shift
-        exec $@
+        exec "$@"
         ;;
     install)
         #winetricks --no-isolate steam
