@@ -14,6 +14,9 @@ fi
 if [ -f $HOME/.xmodmap ]; then
     /usr/bin/xmodmap $HOME/.xmodmap
 fi
+if [ -f $HOME/.Xresources ]; then
+    xrdb -merge $HOME/.Xresources
+fi
 
 DM=$1
 if [ -z "$DM" ] ; then
