@@ -73,7 +73,8 @@ local layouts =
 -- }}}
 
 -- {{{ Wallpaper
-beautiful.wallpaper = os.getenv("XDG_CONFIG_HOME") .. "/Pictures/desktops/active/active.png"
+--beautiful.wallpaper = os.getenv("XDG_CONFIG_HOME") .. "/Pictures/desktops/active/active.png"
+beautiful.wallpaper = "/home/mal/Pictures/desktops/active/active.png"
 if beautiful.wallpaper then
 --  for s = 1, screen.count() do
         gears.wallpaper.maximized(beautiful.wallpaper, nil, false)
