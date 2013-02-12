@@ -74,7 +74,7 @@ local layouts =
 
 -- {{{ Wallpaper
 --beautiful.wallpaper = os.getenv("XDG_CONFIG_HOME") .. "/Pictures/desktops/active/active.png"
-beautiful.wallpaper = "/home/mal/Pictures/desktops/active/active.png"
+--beautiful.wallpaper = "/home/mal/Pictures/desktops/active/active.png"
 if beautiful.wallpaper then
 --  for s = 1, screen.count() do
         gears.wallpaper.maximized(beautiful.wallpaper, nil, false)
@@ -490,9 +490,7 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 do
   local cmds =
   {
-    "redshift-my",
-    "nm-applet",
-    "xrdb " .. os.getenv("XDG_CONFIG_HOME") .. "/.Xresources",
+    "awm-auto.sh",
   }
 
   for _,i in pairs(cmds) do

@@ -13,3 +13,5 @@ export EDITOR="vim"
 
 6p() { curl -s -F "content=<${1--}" -F ttl=604800 -w "%{redirect_url}\n" -o /dev/null https://p.6core.net/; }
 
+alias marchnative='gcc -march=native -E -v - </dev/null 2>&1 | grep cc1'
+
