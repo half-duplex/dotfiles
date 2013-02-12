@@ -14,3 +14,7 @@ fi
 
 nitrogen --restore &
 
+if ps aux | grep x11vnc | grep -v grep >/dev/null ; then
+    x11vnc -6 -alwaysshared -norepeat -usepw -many -remap Control_R-Super_L &
+fi
+
