@@ -306,9 +306,9 @@ globalkeys = awful.util.table.join(
     awful.key({}, "XF86AudioMute", function () os.execute("volctl mute") end),
     awful.key({}, "XF86AudioLowerVolume", function () os.execute("volctl down") end),
     awful.key({}, "XF86AudioRaiseVolume", function () os.execute("volctl up") end),
-    awful.key({}, "XF86AudioPlay", function () os.execute("spotify-hotkey.sh play") end),
-    awful.key({}, "XF86AudioNext", function () os.execute("spotify-hotkey.sh next") end),
-    awful.key({}, "XF86AudioPrev", function () os.execute("spotify-hotkey.sh prev") end)
+    awful.key({}, "XF86AudioPlay", function () os.execute("spotify-hotkey-sender.sh play") end),
+    awful.key({}, "XF86AudioNext", function () os.execute("spotify-hotkey-sender.sh next") end),
+    awful.key({}, "XF86AudioPrev", function () os.execute("spotify-hotkey-sender.sh prev") end)
 
 )
 
