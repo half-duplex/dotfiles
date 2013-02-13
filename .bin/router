@@ -1,0 +1,84 @@
+#!/bin/bash
+
+#ifconfig eth1 down
+#ifconfig eth0 up 172.16.42.42 netmask 255.255.255.0
+
+EXTIF="eth0"
+INTIF="eth1"
+INTIP="172.16.42.42"
+INTNET="172.16.42.0/24"
+
+UNIVERSE="0.0.0.0/0"
+
+iptables -F
+iptables -t nat -F
+iptables -t mangle -F
+iptables -t filter -F
+iptables -X
+
+# Always accept loopback traffic
+iptables -A INPUT -i lo -j ACCEPT
+
+# Allow established connections, and those not coming from the outside
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -m state --state NEW ! -i $EXTIF -j ACCEPT
+iptables -A FORWARD -i $EXTIF -o $INTIF -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow outgoing connections from the LAN side.
+iptables -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+
+# Masquerade.
+iptables -t nat -A POSTROUTING -o $EXTIF -j MASQUERADE
+
+# Don't forward from the outside to the inside.
+#iptables -A FORWARD -i $EXTIF -o $EXTIF -j REJECT
+
+# Enable routing.
+echo 1 >/proc/sys/net/ipv4/conf/all/forwarding
+
+
+
+
+
+EXTIF=sixxs
+#INTIF=br0 # always br0 # leave set from above
+INTIP=2001:4830:119c::1
+
+ip6tables -F
+#ip6tables -t nat -F
+ip6tables -t mangle -F
+ip6tables -t filter -F
+ip6tables -X
+
+ip6tables -A INPUT -m rt --rt-type 0 -j DROP
+ip6tables -A FORWARD -m rt --rt-type 0 -j DROP
+ip6tables -A OUTPUT -m rt --rt-type 0 -j DROP
+
+# Always accept loopback traffic
+ip6tables -A INPUT -i lo -j ACCEPT
+
+# Allow established connections, and those not coming from the outside
+ip6tables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+ip6tables -A INPUT -m state --state NEW ! -i $EXTIF -j ACCEPT
+ip6tables -A FORWARD -i $EXTIF -o $INTIF -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow outgoing connections from the LAN side.
+ip6tables -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+
+# Don't forward from the outside to the inside.
+ip6tables -A FORWARD -i $EXTIF -o $EXTIF -j ACCEPT #REJECT
+
+
+
+
+
+ip -6 ro add 2001:4830:119c::/48 dev lo
+echo 1 >/proc/sys/net/ipv6/conf/all/forwarding
+#service radvd start
+systemctl start radvd
+
+
+
+#service aiccu restart
+systemctl start aiccu
+
