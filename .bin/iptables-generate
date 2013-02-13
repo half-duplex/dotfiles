@@ -7,7 +7,8 @@ INTNET="172.16.42.0/24"
 LOGDROPLIMIT="2/s"
 LOGDROPLIMITBURST="10"
 
-iptables-restore <<EOF
+mv /etc/iptables/iptables.rules /etc/iptables/iptables.rules.old
+cat >/etc/iptables/iptables.rules  <<EOF
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
@@ -79,13 +80,16 @@ COMMIT
 COMMIT
 EOF
 
+systemctl restart iptables
+
 
 EXTIF=sixxs
 #INTIF=br0 # always br0 # leave set from above
 INTIP=2001:4830:119c::1
 
+mv /etc/iptables/ip6tables.rules /etc/iptables/ip6tables.rules.old
 
-ip6tables-restore <<EOF
+cat >/etc/iptables/ip6tables.rules <<EOF
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
@@ -152,6 +156,7 @@ ip6tables-restore <<EOF
 COMMIT
 EOF
 
+systemctl restart ip6tables
 
 
 #ip -6 ro add 2001:4830:119c::/48 dev lo
