@@ -1,5 +1,7 @@
 #!/bin/sh
 
+DISPLAY=:0.0
+
 case $1 in
    "play")
        key="XF86AudioPlay"
