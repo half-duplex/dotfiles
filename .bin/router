@@ -1,84 +1,160 @@
 #!/bin/bash
 
-#ifconfig eth1 down
-#ifconfig eth0 up 172.16.42.42 netmask 255.255.255.0
-
 EXTIF="eth0"
 INTIF="eth1"
 INTIP="172.16.42.42"
 INTNET="172.16.42.0/24"
+LOGDROPLIMIT="2/s"
+LOGDROPLIMITBURST="10"
 
-UNIVERSE="0.0.0.0/0"
+iptables-restore <<EOF
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
 
-iptables -F
-iptables -t nat -F
-iptables -t mangle -F
-iptables -t filter -F
-iptables -X
+-N LOGDROP
+-A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
+-A LOGDROP -p udp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "UDP LOGDROP: "
+-A LOGDROP -p icmp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
+-A LOGDROP -f -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
+-A LOGDROP -j DROP
 
-# Always accept loopback traffic
-iptables -A INPUT -i lo -j ACCEPT
+-N LOGACCEPT
+-A LOGACCEPT -p tcp -j LOG --log-prefix "TCP LOGACCEPT: "
+-A LOGACCEPT -p udp -j LOG --log-prefix "UDP LOGACCEPT: "
+-A LOGACCEPT -p icmp -j LOG --log-prefix "ICMP LOGACCEPT: "
+-A LOGACCEPT -f -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
+-A LOGACCEPT -j ACCEPT
 
-# Allow established connections, and those not coming from the outside
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -A INPUT -m state --state NEW ! -i $EXTIF -j ACCEPT
-iptables -A FORWARD -i $EXTIF -o $INTIF -m state --state ESTABLISHED,RELATED -j ACCEPT
+# Loopback is always okay
+-A INPUT -i lo -j ACCEPT
 
-# Allow outgoing connections from the LAN side.
-iptables -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+# Any incoming not headed for the external IP drop (actually I don't want to
+# need $EXTIP if I don't need it )
+#-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
 
-# Masquerade.
-iptables -t nat -A POSTROUTING -o $EXTIF -j MASQUERADE
+# ICMP
+-A INPUT -p ICMP -j ACCEPT
 
-# Don't forward from the outside to the inside.
-#iptables -A FORWARD -i $EXTIF -o $EXTIF -j REJECT
+# DHCP server
+-A INPUT -i $INTIF -p tcp --sport 67 --dport 68 -j ACCEPT
+-A INPUT -i $INTIF -p udp --sport 67 --dport 68 -j ACCEPT
 
-# Enable routing.
-echo 1 >/proc/sys/net/ipv4/conf/all/forwarding
+# SSH server
+-A INPUT -p tcp --dport 22 -j ACCEPT
 
+# TFTP server
+-A INPUT -p udp --dport 69 -j ACCEPT
 
+# Minecraft server
+-A INPUT -p tcp --dport 25565 -j ACCEPT
+-A INPUT -p udp --dport 25565 -j ACCEPT
 
+# Existing connections are fine
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# New ones are too unless they're from outside
+-A INPUT -m conntrack --ctstate NEW ! -i $EXTIF -j ACCEPT
+
+# Forwarding existing connections to the internal interface is fine
+-A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Internal network to universe is fine
+-A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+
+# Don't forward traffic from outside to outside
+-A FORWARD -i $EXTIF -o $EXTIF -j REJECT
+
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Masquerade outgoing for NAT
+-A POSTROUTING -o $EXTIF -j MASQUERADE
+
+COMMIT
+EOF
 
 
 EXTIF=sixxs
 #INTIF=br0 # always br0 # leave set from above
 INTIP=2001:4830:119c::1
 
-ip6tables -F
-#ip6tables -t nat -F
-ip6tables -t mangle -F
-ip6tables -t filter -F
-ip6tables -X
 
-ip6tables -A INPUT -m rt --rt-type 0 -j DROP
-ip6tables -A FORWARD -m rt --rt-type 0 -j DROP
-ip6tables -A OUTPUT -m rt --rt-type 0 -j DROP
+ip6tables-restore <<EOF
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
 
-# Always accept loopback traffic
-ip6tables -A INPUT -i lo -j ACCEPT
+# Bad Stuff (don't copy over)
+-A INPUT -m rt --rt-type 0 -j DROP
+-A FORWARD -m rt --rt-type 0 -j DROP
+-A OUTPUT -m rt --rt-type 0 -j DROP
 
-# Allow established connections, and those not coming from the outside
-ip6tables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-ip6tables -A INPUT -m state --state NEW ! -i $EXTIF -j ACCEPT
-ip6tables -A FORWARD -i $EXTIF -o $INTIF -m state --state ESTABLISHED,RELATED -j ACCEPT
+-N LOGDROP
+-A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
+-A LOGDROP -p udp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "UDP LOGDROP: "
+-A LOGDROP -p icmp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
+-A LOGDROP -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
+-A LOGDROP -j DROP
 
-# Allow outgoing connections from the LAN side.
-ip6tables -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+-N LOGACCEPT
+-A LOGACCEPT -p tcp -j LOG --log-prefix "TCP LOGACCEPT: "
+-A LOGACCEPT -p udp -j LOG --log-prefix "UDP LOGACCEPT: "
+-A LOGACCEPT -p icmp -j LOG --log-prefix "ICMP LOGACCEPT: "
+-A LOGACCEPT -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
+-A LOGACCEPT -j ACCEPT
 
-# Don't forward from the outside to the inside.
-ip6tables -A FORWARD -i $EXTIF -o $EXTIF -j ACCEPT #REJECT
+# Loopback is always okay
+-A INPUT -i lo -j ACCEPT
+
+# Any incoming not headed for the external IP drop (actually I don't want to
+# need $EXTIP if I don't need it )
+#-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
+
+# ICMP
+-A INPUT -p ICMP -j ACCEPT
+
+# DHCP server
+-A INPUT -i $INTIF -p tcp --sport 67 --dport 68 -j ACCEPT
+-A INPUT -i $INTIF -p udp --sport 67 --dport 68 -j ACCEPT
+
+# SSH server
+-A INPUT -p tcp --dport 22 -j ACCEPT
+
+# TFTP server
+-A INPUT -p udp --dport 69 -j ACCEPT
+
+# Minecraft server
+-A INPUT -p tcp --dport 25565 -j ACCEPT
+-A INPUT -p udp --dport 25565 -j ACCEPT
+
+# Existing connections are fine
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# New ones are too unless they're from outside
+-A INPUT -m conntrack --ctstate NEW ! -i $EXTIF -j ACCEPT
+
+# Forwarding existing connections to the internal interface is fine
+-A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Internal network to universe is fine
+-A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+
+# Don't forward traffic from outside to outside
+-A FORWARD -i $EXTIF -o $EXTIF -j REJECT
+
+COMMIT
+EOF
 
 
 
-
-
-ip -6 ro add 2001:4830:119c::/48 dev lo
-echo 1 >/proc/sys/net/ipv6/conf/all/forwarding
-#service radvd start
-systemctl start radvd
-
-
-
-#service aiccu restart
-systemctl start aiccu
+#ip -6 ro add 2001:4830:119c::/48 dev lo
+#systemctl start radvd
+#systemctl start aiccu
 
