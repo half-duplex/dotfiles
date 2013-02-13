@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ~/.ovpn
+exec sudo openvpn client$1.conf
+
