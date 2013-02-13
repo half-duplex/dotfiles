@@ -303,9 +303,12 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "Down"  , function () awful.util.spawn("gksu 'cpupower frequency-set -g ondemand'"   ) end),
     awful.key({ modkey, "Control" }, "Up"    , function () awful.util.spawn("gksu 'cpupower frequency-set -g performance'") end),
 
-    awful.key({}, "XF86AudioMute", function () os.execute("volctl mute") end),
+    awful.key({}, "XF86AudioMute"       , function () os.execute("volctl mute") end),
     awful.key({}, "XF86AudioLowerVolume", function () os.execute("volctl down") end),
     awful.key({}, "XF86AudioRaiseVolume", function () os.execute("volctl up") end),
+    awful.key({ modkey }, "XF86AudioMute"       , function () os.execute("spotify-hotkey-sender.sh volmute") end),
+    awful.key({ modkey }, "XF86AudioLowerVolume", function () os.execute("spotify-hotkey-sender.sh voldown") end),
+    awful.key({ modkey }, "XF86AudioRaiseVolume", function () os.execute("spotify-hotkey-sender.sh volup") end),
     awful.key({}, "XF86AudioPlay", function () os.execute("spotify-hotkey-sender.sh play") end),
     awful.key({}, "XF86AudioNext", function () os.execute("spotify-hotkey-sender.sh next") end),
     awful.key({}, "XF86AudioPrev", function () os.execute("spotify-hotkey-sender.sh prev") end)
