@@ -103,6 +103,7 @@ myawesomemenu = {
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
                                     { "open terminal", terminal },
                                     { "firefox", "firefox" },
+                                    { "spotify", "spotify" },
                                     { "lock", "i3lock -d -c 000000" },
                                     { "run", function() mypromptbox[mouse.screen]:run() end }
                                   }
