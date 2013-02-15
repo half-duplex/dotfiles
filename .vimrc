@@ -74,7 +74,7 @@ noremap   <Right>  <NOP>
 autocmd FileType make setlocal noexpandtab
 
 " git diff in window split when commiting
-autocmd FileType gitcommit DiffGitCached | wincmd p
+"autocmd FileType gitcommit DiffGitCached | wincmd p
 
 set pastetoggle=<F2>
 
