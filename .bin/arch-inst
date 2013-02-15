@@ -1,0 +1,149 @@
+#!/bin/bash -ex
+
+# todo: enable multilib
+
+# You must have already partitioned, formatted, and MOUNTED your target
+
+GUI="y"
+DVORAK="n"
+YAOURT="y"
+SSDTARGET="n"
+GFX="nvidia" # drivers: ati, ati-proprietary, intel, nouveau, nvidia, none
+LAPTOP="n"
+NETWORKMANAGER="y"
+AWESOMEWM="y"
+HOSTNAME="admincon03"
+TARGET="/mnt"
+GRUBTARGET="/dev/sda"
+LOCALE="en_US.UTF-8"
+TIMEZONE="America/New_York"
+MYUSERNAME="vladmin"
+PACKAGES="tmux bash-completion os-prober htop strace lsof mtr xterm"
+PACMANARGS="" #--arch i686" # helpful for --arch i686 or similar, is passed along with packages to pacstrap
+
+
+if [ -z "`mount | grep -E \" on $TARGET type \"`" ] ; then
+    echo "You should have \$TARGET partitioned, formatted, and mounted."
+    echo "You should also configure the top of this script to your setup."
+    echo "Do that then run me again."
+    exit 1
+fi
+
+echo -en "Hello, $MYUSERNAME@$HOSTNAME! About to install archlinux to $TARGET.\nPress [Enter] to continue:"
+read a
+
+PACKAGES="$PACKAGES base base-devel vim sudo grub-bios curl wget ca-certificates ntp openssh"
+#rm $TARGET/var/cache/pacman/pkg/*.tar.xz
+if [ "x$GUI" == "xy" ] ; then
+    PACKAGES="$PACKAGES xorg-server xorg-xinit xorg-server-utils awesome slim slim-themes archlinux-themes-slim"
+    case $GFX in
+        ati) # untested
+            PACKAGES="$PACKAGES xf86-video-ati" # xf86-video-vesa xf86-video-fbdev xf86-video-modesetting"
+            ;;
+        ati-proprietary) # untested
+            PACKAGES="$PACKAGES catalyst"
+            ;;
+        intel)
+            PACKAGES="$PACKAGES mesa xf86-video-intel"
+            ;;
+        nouveau) # untested
+            # nothing required iirc
+            ;;
+        nvidia) # untested
+            PACKAGES="$PACKAGES nvidia"
+            ;;
+        none)
+            echo "Not configuring graphics"
+            ;;
+        *)
+            echo "Bad GFX option!"
+            exit 1
+            ;;
+    esac
+    if [ "x$LAPTOP" == "xy" ] ; then
+        PACKAGES="$PACKAGES xf86-input-synaptics"
+    fi
+    if [ "x$NETWORKMANAGER" == "xy" ] ; then
+        PACKAGES="$PACKAGES networkmanager network-manager-applet"
+    fi
+    if [ "x$AWESOMEWM" == "xy" ] ; then
+        PACKAGES="$PACKAGES awesome slim slim-themes archlinux-themes-slim"
+    fi
+fi
+
+pacstrap $TARGET $PACKAGES $PACMANARGS
+
+if [ "x$GUI" == "xy" ] ; then
+    if [ "x$NETWORKMANAGER" == "xy" ] ; then
+        arch-chroot $TARGET systemctl enable NetworkManager.service
+    fi
+    if [ "x$AWESOMEWM" == "xy" ] ; then
+        arch-chroot $TARGET systemctl enable slim.service
+        echo "exec awesome" >>$TARGET/etc/skel/.xinitrc
+        sed -i $TARGET/etc/slim.conf -e "s/^console_cmd/#console_cmd/"
+        sed -i $TARGET/etc/slim.conf -e "s/^# hidecursor.*false/hidecursor true/"
+        sed -i $TARGET/etc/slim.conf -e "s/^sessions.*/sessions awesome/"
+        sed -i $TARGET/etc/slim.conf -e "s/^current_theme.*/current_theme archlinux/"
+    fi
+fi
+
+sed -i $TARGET/etc/locale.gen -e "s/#$LOCALE/$LOCALE/"
+echo "LANG=$LOCALE" >$TARGET/etc/locale.conf
+arch-chroot $TARGET locale-gen
+
+
+arch-chroot $TARGET ln -s /usr/share/zoneinfo/$TIMEZONE /etc/localtime
+# these are useless when blasting but important from live
+arch-chroot $TARGET ntpdate tick.usno.navy.mil
+arch-chroot $TARGET hwclock --systohc -u
+
+echo "$HOSTNAME" >$TARGET/etc/hostname
+sed -i $TARGET/etc/hosts -e "s/localhost$/localhost $HOSTNAME/g"
+
+genfstab -pU $TARGET >$TARGET/etc/fstab
+arch-chroot $TARGET mkinitcpio -p linux
+
+arch-chroot $TARGET grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot $TARGET grub-install $GRUBTARGET
+
+if [ "x$YAOURT" == "xy" ] ; then
+    echo "Installing yaourt..."
+    cat >>$TARGET/etc/pacman.conf <<EOF
+[archlinuxfr]
+Server = http://repo.archlinux.fr/\$arch
+EOF
+    arch-chroot $TARGET pacman -Sy yaourt --noconfirm $PACMANARGS
+fi
+
+if [ "x$DVORAK" == "xy" ] ; then
+    echo "Configuring dvorak keymaps..."
+    echo "KEYMAP=dvorak" >$TARGET/etc/vconsole.conf
+    cat >$TARGET/etc/X11/xorg.conf.d/10-dvorak.conf <<EOF
+Section "InputClass"
+        Identifier             "keyboard-layout"
+        MatchIsKeyboard        "on"
+        Option "XkbLayout"     "us"
+        Option "XkbVariant"    "dvorak"
+EndSection
+EOF
+fi
+
+if [ "x$SSDTARGET" == "xy" ] ; then
+    echo "Adding ssd-friendly mount config..."
+    cat >$TARGET/etc/udev/rules.d/60-schedulers.rules <<EOF
+# set deadline scheduler for non-rotating disks
+ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="deadline"
+EOF
+    sed -e "s/relatime/discard,noatime,nodiratime/g" -i $TARGET/etc/fstab
+fi
+
+sed -i $TARGET/etc/sudoers -e "s/^# \%sudo.ALL/\%sudo ALL/"
+arch-chroot $TARGET groupadd sudo
+
+echo "Creating non-root user account..."
+arch-chroot $TARGET useradd -U -s /bin/bash -m -G sys,adm,disk,lp,wheel,uucp,locate,games,network,video,audio,optical,floppy,storage,scanner,power,users,sudo $MYUSERNAME
+arch-chroot $TARGET passwd $MYUSERNAME
+
+#rm $TARGET/var/cache/pacman/pkg/*.tar.xz
+
+echo "Done!"
