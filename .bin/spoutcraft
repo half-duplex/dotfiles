@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd ~/.spoutcraft/
-exec java -jar Spoutcraft.jar

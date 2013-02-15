@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd ~/.bin/usr/local/ftb/
-exec java -Xmx2G -Xincgc -jar FTB_Launcher.jar

@@ -1,4 +1,19 @@
 #!/bin/bash
 
-cd ~/.bin/usr/local/
-exec java -Xmx2G -Xincgc -jar minecraft.jar
+java="java -Xmx2G -Xincgc"
+
+case $1 in
+    ftb|feedthebeast)
+        cd ~/.bin/usr/local/ftb/
+        exec $java -jar FTB_Launcher.jar
+        ;;
+    spout|spoutcraft)
+        cd ~/.spoutcraft/
+        exec $java -jar Spoutcraft.jar
+        ;;
+    mc|minecraft|*)
+        cd ~/.bin/usr/local/
+        exec $java -jar minecraft.jar
+        ;;
+esac
+
