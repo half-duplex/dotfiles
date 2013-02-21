@@ -1,6 +1,7 @@
 #!/bin/bash
 
-java="java -Xmx2G -Xincgc"
+java="java"
+jopts="-Xmx2G -Xincgc"
 
 case $1 in
     ftb|feedthebeast)
@@ -13,7 +14,7 @@ case $1 in
         ;;
     mc|minecraft|*)
         cd ~/.bin/usr/local/
-        exec $java -jar minecraft.jar
+        exec $java $jopts -jar minecraft.jar
         ;;
 esac
 
