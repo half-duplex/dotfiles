@@ -1,5 +1,5 @@
 "runtime bundle/vim-pathogen/autoload/pathogen.vim
-execute pathogen#infect()
+"execute pathogen#infect()
 
 syntax on
 set cindent
@@ -12,6 +12,7 @@ set tw=79
 set nowrap
 set fo-=t
 "set colorcolumn=80
+set background=dark
 
 " save sudo-only files
 cmap w!! %!sudo tee > /dev/null %
