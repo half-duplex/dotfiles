@@ -57,12 +57,12 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
 {
-    awful.layout.suit.fair,
+--  awful.layout.suit.fair,
+    awful.layout.suit.fair.horizontal,
     awful.layout.suit.tile.bottom,
     awful.layout.suit.tile,
 --  awful.layout.suit.tile.left,
 --  awful.layout.suit.tile.top,
---  awful.layout.suit.fair.horizontal,
 --  awful.layout.suit.spiral,
 --  awful.layout.suit.spiral.dwindle,
 --  awful.layout.suit.max,
@@ -106,7 +106,7 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "open terminal", terminal },
                                     { "firefox", "firefox" },
                                     { "spotify", "spotify" },
-                                    { "lock", "i3lock -d -c 000000" },
+                                    { "lock", "i3lock -c 000000" },
                                     { "run", function() mypromptbox[mouse.screen]:run() end }
                                   }
                         })
@@ -300,7 +300,7 @@ globalkeys = awful.util.table.join(
 
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                               ) end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -d -c 000000"                       ) end),
+    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -c 000000"                       ) end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"    ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                    ) end),
     awful.key({ modkey, "Control" }, "Down"  , function () awful.util.spawn("gksu 'cpupower frequency-set -g ondemand'"   ) end),
