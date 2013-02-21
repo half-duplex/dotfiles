@@ -143,6 +143,7 @@ arch-chroot $TARGET groupadd sudo
 echo "Creating non-root user account..."
 arch-chroot $TARGET useradd -U -s /bin/bash -m -G sys,adm,disk,lp,wheel,uucp,locate,games,network,video,audio,optical,floppy,storage,scanner,power,users,sudo $MYUSERNAME
 arch-chroot $TARGET passwd $MYUSERNAME
+arch-chroot $TARGET usermod -L root
 
 #rm $TARGET/var/cache/pacman/pkg/*.tar.xz
 
