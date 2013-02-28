@@ -72,16 +72,6 @@ local layouts =
 }
 -- }}}
 
--- {{{ Wallpaper
---beautiful.wallpaper = os.getenv("XDG_CONFIG_HOME") .. "/Pictures/desktops/active/active.png"
---beautiful.wallpaper = "/home/mal/Pictures/desktops/active/active.png"
-if beautiful.wallpaper then
---  for s = 1, screen.count() do
-        gears.wallpaper.maximized(beautiful.wallpaper, nil, false)
---  end
-end
--- }}}
-
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
@@ -288,33 +278,27 @@ globalkeys = awful.util.table.join(
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
---  awful.key({ modkey }, "x",
---            function ()
---                awful.prompt.run({ prompt = "Run Lua code: " },
---                mypromptbox[mouse.screen].widget,
---                awful.util.eval, nil,
---                awful.util.getdir("cache") .. "/history_eval")
---            end),
     -- Menubar
     awful.key({ modkey }, "s", function() menubar.show() end),
 
     -- Hotkeys
-    awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                               ) end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -c 000000"                       ) end),
-    awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"    ) end),
-    awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                    ) end),
+    awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
+    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -c 000000"                            ) end),
+    awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
+    awful.key({ modkey,           }, "Print" , function () awful.util.spawn("xfce4-screenshooter"                         ) end),
+    awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
     awful.key({ modkey, "Control" }, "Down"  , function () awful.util.spawn("gksu 'cpupower frequency-set -g ondemand'"   ) end),
     awful.key({ modkey, "Control" }, "Up"    , function () awful.util.spawn("gksu 'cpupower frequency-set -g performance'") end),
 
-    awful.key({}, "XF86AudioMute"       , function () os.execute("volctl mute") end),
-    awful.key({}, "XF86AudioLowerVolume", function () os.execute("volctl down") end),
-    awful.key({}, "XF86AudioRaiseVolume", function () os.execute("volctl up") end),
+    awful.key({},         "XF86AudioMute"       , function () os.execute("volctl mute") end),
+    awful.key({},         "XF86AudioLowerVolume", function () os.execute("volctl down") end),
+    awful.key({},         "XF86AudioRaiseVolume", function () os.execute("volctl up") end),
     awful.key({ modkey }, "XF86AudioMute"       , function () os.execute("spotify-hotkey-sender.sh volmute") end),
     awful.key({ modkey }, "XF86AudioLowerVolume", function () os.execute("spotify-hotkey-sender.sh voldown") end),
     awful.key({ modkey }, "XF86AudioRaiseVolume", function () os.execute("spotify-hotkey-sender.sh volup") end),
-    awful.key({}, "XF86AudioPlay", function () os.execute("spotify-hotkey-sender.sh play") end),
-    awful.key({}, "XF86AudioNext", function () os.execute("spotify-hotkey-sender.sh next") end),
-    awful.key({}, "XF86AudioPrev", function () os.execute("spotify-hotkey-sender.sh prev") end)
+    awful.key({},         "XF86AudioPlay",        function () os.execute("spotify-hotkey-sender.sh play") end),
+    awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey-sender.sh next") end),
+    awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey-sender.sh prev") end)
 
 )
 
