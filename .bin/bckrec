@@ -2,6 +2,7 @@
 
 now="`date +%s`"
 xsize="`xrandr | grep '*' | awk '{print $1}'`"
+xsize="1920x1080"
 
 #arecord -r 192 >./out/$now.wav &
 arecord -f cd ./out/$now.wav -r 48000 &
