@@ -1,0 +1,11 @@
+#!/bin/bash
+
+now="`date +%Y%m%d%H%M%S`"
+xsize="`xrandr | grep '*' | awk '{print $1}' | sort -r | head -n 1`"
+echo "Recording top-left most $xsize area"
+echo "Be sure to test audio setup (eg. set internal monitor as default input device)"
+echo "Saving to $now.mkv"
+echo "Press 'q' to stop"
+sleep 1
+
+ffmpeg -f alsa -ac 2 -i pulse -f x11grab -r 30 -s $xsize -i :0.0 -acodec pcm_s16le -vcodec libx264 -preset ultrafast -crf 0 -threads 0 $now.mkv
