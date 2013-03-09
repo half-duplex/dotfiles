@@ -87,6 +87,7 @@ myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart awm", awesome.restart },
+   { "suspend", "locksuspend" },
    { "logout", awesome.quit },
    { "reboot", "reboot" },
    { "poweroff", "poweroff" }
