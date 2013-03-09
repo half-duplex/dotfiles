@@ -1,17 +1,18 @@
 #!/usr/bin/python3
 import os
-import ConfigParser
+import configparser
 
-configparser = ConfigParser.ConfigParser()
+class MyConfigParser(configparser.ConfigParser):
+    def as_dict(self):
+        d = dict(self._sections)
+        for k in d:
+            d[k] = dict(self._defaults, **d[k])
+            d[k].pop('__name__', None)
+        return d
 
-config=[]
-with open(os.path.expanduser("~")+"/.mcr","r") as conffile:
-    for line in conffile:
-        config.append(line[:-1])
+mycfgp=MyConfigParser()
+mycfgp.read(os.path.expanduser("~")+"/.mcr")
+config=mycfgp.as_dict()
 
-for line in config:
-    if len(line)<1 or line[0]=="#" or line[0]==";": # comment
-        continue
-    tup=line.split("=",1)
-    print("tup:",tup)
+print(config)
 
