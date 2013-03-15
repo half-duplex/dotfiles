@@ -297,6 +297,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "XF86AudioMute"       , function () os.execute("spotify-hotkey-sender.sh volmute") end),
     awful.key({ modkey }, "XF86AudioLowerVolume", function () os.execute("spotify-hotkey-sender.sh voldown") end),
     awful.key({ modkey }, "XF86AudioRaiseVolume", function () os.execute("spotify-hotkey-sender.sh volup") end),
+    awful.key({ modkey }, "XF86AudioPlay",        function () os.execute("spotify-hotkey.sh play") end),
+    awful.key({ modkey }, "XF86AudioNext",        function () os.execute("spotify-hotkey.sh next") end),
+    awful.key({ modkey }, "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end)
     awful.key({},         "XF86AudioPlay",        function () os.execute("spotify-hotkey-sender.sh play") end),
     awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey-sender.sh next") end),
     awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey-sender.sh prev") end)
@@ -489,3 +492,8 @@ do
   end
 end
 
+-- disable startup-notification globally
+local oldspawn = awful.util.spawn
+awful.util.spawn = function (s)
+  oldspawn(s, false)
+end
