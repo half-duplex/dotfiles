@@ -14,13 +14,13 @@ NICENAME="Kali Linux 1.0 x86_64" # for grub menu
 PERSISTLABEL="persistence" # "casper-rw" for backtrack, "persistence" for kali
 
 
-echo "Continuing will permanently erase all serially attached block devices\n not configured otherwise! Type \"Do it!\" to continue: "
-read doit
-if [ "x$doit" != "xDo it!" ] ; then exit 1 ; fi
-
 ISONAME="`basename $ISO`"
 
 if [ "$1" == "" ] ; then
+    echo "Continuing will permanently erase all serially attached block devices\n not configured otherwise! Type \"Do it!\" to continue: "
+    read doit
+    if [ "x$doit" != "xDo it!" ] ; then exit 1 ; fi
+
     # unmount any stale stuff
     umount /tmp/btmnt/* >/dev/null 2>&1 || true
     # mount the iso
