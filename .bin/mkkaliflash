@@ -17,7 +17,7 @@ PERSISTLABEL="persistence" # "casper-rw" for backtrack, "persistence" for kali
 ISONAME="`basename $ISO`"
 
 if [ "$1" == "" ] ; then
-    echo "Continuing will permanently erase all serially attached block devices\n not configured otherwise! Type \"Do it!\" to continue: "
+    echo -e "Continuing will permanently erase all serially attached block devices\n not configured otherwise! Type \"Do it!\" to continue: "
     read doit
     if [ "x$doit" != "xDo it!" ] ; then exit 1 ; fi
 
