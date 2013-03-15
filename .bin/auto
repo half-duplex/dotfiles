@@ -1,13 +1,10 @@
-#!/bin/bash -ex
+#!/bin/bash
 
 firefox &
-sleep 3
-
 thunderbird &
-sleep 3
 
 pidgin &
-skype &
+#skype &
 teamspeak3 &
 xchat &
 #spotify &
