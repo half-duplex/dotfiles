@@ -1,6 +1,8 @@
 #!/bin/bash
 # 99.5% copypasted from http://ubuntuforums.org/showthread.php?t=1392026
 
+export DISPLAY=:0.0
+
 now="`date +%Y%m%d%H%M%S`"
 xsize="`xrandr | grep '*' | awk '{print $1}' | sort -r | head -n 1`"
 echo "Recording top-left most $xsize area"
