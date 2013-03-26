@@ -1,4 +1,9 @@
 #!/bin/bash
 
-export DISPLAY=:0.0
-exec redshift -l 44.136186:-72.661771 $@
+LOCATION="44.136186:-72.661771"
+
+for i in {0..2}
+do
+    redshift -m vidmode:screen=$i -l $LOCATION &
+done
+

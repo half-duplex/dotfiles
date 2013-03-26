@@ -1,0 +1,11 @@
+#!/bin/bash
+
+date1=$(date +"%s")
+date2=$(date --date="May 11, 2013 15:00" +"%s") # DST, probably
+diff=$(($date2-$date1))
+days=$(($diff / 86400))
+hours=$(($diff % 86400 / 3600))
+minutes=$(($diff % 3600 / 60))
+echo -e "$days days, $hours hours, $minutes minutes until graduation!\n\nThis automated message brought to you by Norwich University and the Department of Army." | mutt -s "Graduation in $days days!" "mallegonian@gmail.com" "eatberrys@gmail.com" 2>&1 >/dev/null
+rm sent
+
