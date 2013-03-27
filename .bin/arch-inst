@@ -18,7 +18,7 @@ GRUBTARGET="/dev/sda"
 LOCALE="en_US.UTF-8"
 TIMEZONE="America/New_York"
 MYUSERNAME="vladmin"
-PACKAGES="tmux bash-completion os-prober htop strace lsof mtr xterm"
+PACKAGES="tmux bash-completion os-prober htop strace lsof mtr xterm powertop"
 PACMANARGS="" #--arch i686" # helpful for --arch i686 or similar, is passed along with packages to pacstrap
 
 
@@ -65,6 +65,8 @@ if [ "x$GUI" == "xy" ] ; then
     fi
     if [ "x$NETWORKMANAGER" == "xy" ] ; then
         PACKAGES="$PACKAGES networkmanager network-manager-applet"
+    else
+        PACKAGES="$PACKAGES netcfg"
     fi
     if [ "x$AWESOMEWM" == "xy" ] ; then
         PACKAGES="$PACKAGES awesome slim slim-themes archlinux-themes-slim"
