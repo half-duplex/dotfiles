@@ -97,7 +97,7 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "open terminal", terminal },
                                     { "firefox", "firefox" },
                                     { "spotify", "spotify" },
-                                    { "lock", "i3lock -u -i /home/mal/Pictures/misc/win-desktop-trips.png -p win -c 000000" },
+                                    { "lock", "i3lock -u -i /home/mal/Pictures/misc/win-desktop-quads.png -p win -c 000000" },
                                     { "run", function() mypromptbox[mouse.screen]:run() end }
                                   }
                         })
@@ -284,7 +284,7 @@ globalkeys = awful.util.table.join(
 
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -u -i /home/mal/Pictures/misc/win-desktop-trips.png -p win -c 000000") end),
+    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -u -i /home/mal/Pictures/misc/win-desktop-quads.png -p win -c 000000") end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("xfce4-screenshooter"                         ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),

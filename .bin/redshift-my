@@ -2,7 +2,7 @@
 
 LOCATION="44.136186:-72.661771"
 
-for i in {0..2}
+for i in {0..3}
 do
     redshift -m vidmode:screen=$i -l $LOCATION &
 done
