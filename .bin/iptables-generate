@@ -110,7 +110,8 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 -N LOGACCEPT
 -A LOGACCEPT -p tcp -j LOG --log-prefix "TCP LOGACCEPT: "
 -A LOGACCEPT -p udp -j LOG --log-prefix "UDP LOGACCEPT: "
--A LOGACCEPT -p icmp -j LOG --log-prefix "ICMP LOGACCEPT: "
+# icmpv6 for ipv6
+-A LOGACCEPT -p icmpv6 -j LOG --log-prefix "ICMP LOGACCEPT: "
 -A LOGACCEPT -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
 -A LOGACCEPT -j ACCEPT
 
