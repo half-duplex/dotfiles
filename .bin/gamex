@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec xinit $@ -- :1 vt08 -xf86config xorg.game.conf

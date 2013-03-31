@@ -31,7 +31,8 @@ xfce|xfce4)
     exec startxfce4
     ;;
 *)
-    echo "Session type not valid!"
+    echo ".xinitrc: Unrecognized session type, exec anyway"
+    exec $@
     ;;
 esac
 

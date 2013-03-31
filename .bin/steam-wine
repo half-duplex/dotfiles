@@ -2,6 +2,7 @@
 
 export WINEPREFIX="$HOME/.local/share/wineprefixes/steam"
 export WINEARCH=win32
+export WINEDEBUG="" # fixme-all
 
 case $1 in
     run)
@@ -12,7 +13,7 @@ case $1 in
         #winetricks --no-isolate steam
         winetricks corefonts
         wget -o /dev/null -O /tmp/SteamInstall.msi http://cdn.steampowered.com/download/SteamInstall.msi
-        WINEDEBUG="fixme-all" wine msiexec /i /tmp/SteamInstall.msi
+        exec wine msiexec /i /tmp/SteamInstall.msi
         ;;
     fixfonts)
         cat >/tmp/steamfixfonts.reg <<EOF
@@ -22,13 +23,15 @@ case $1 in
 "FontSmoothingGamma"=dword:00000578
 "FontSmoothingOrientation"=dword:00000001
 EOF
-        env WINEDEBUG="fixme-all" exec wine regedit fontfix.reg
+        env WINEDEBUG="$WINEDEBUG" exec wine regedit fontfix.reg
         ;;
-    "")
-        WINEDEBUG="fixme-all" exec wine "C:\Program Files\Steam\steam.exe" -no-dwrite
+    ""|args)
+        shift
+        exec wine "C:\Program Files\Steam\steam.exe" -no-dwrite $@
         ;;
     help|*)
         echo "Run with no arguments to start steam, OR one of:
+            args [stuff]        Passes [stuff] to steam.exe
             run [command]       Run [command] for steam prefix
             install             Download and install steam
             fixfonts            Apply patch to make fonts look better
