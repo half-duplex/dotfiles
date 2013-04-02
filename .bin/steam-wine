@@ -2,7 +2,7 @@
 
 export WINEPREFIX="$HOME/.local/share/wineprefixes/steam"
 export WINEARCH=win32
-export WINEDEBUG="" # fixme-all
+export WINEDEBUG="-all" # fixme-all or -all (or etc)
 
 case $1 in
     run)
