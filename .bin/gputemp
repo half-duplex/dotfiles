@@ -1,0 +1,3 @@
+#!/bin/bash
+
+DISPLAY=:0.0 nvidia-settings -q GPUCoreTemp | grep Attribute | sed -E "s/.*: ([0-9]*)./\1/g"

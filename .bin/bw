@@ -1,0 +1,17 @@
+#!/bin/bash
+
+CONN=`netstat -nt | awk '{ print $5}' | cut -d: -f1 | sed -e '/^$/d' | sort -n | uniq | wc -l`
+DATE=`date '+%D | %r'`
+
+BR1=`cat /sys/class/net/$2/statistics/rx_bytes`
+BT1=`cat /sys/class/net/$2/statistics/tx_bytes`
+sleep $1
+BR2=`cat /sys/class/net/$2/statistics/rx_bytes`
+BT2=`cat /sys/class/net/$2/statistics/tx_bytes`
+
+INKB=$(((($BR2-$BR1) /$1) /1024))
+OUTKB=$(((($BT2-$BT1) /$1) /1024))
+
+echo "$DATE | $CONN | $INKB KB/s In ($2) | $OUTKB KB/s Out ($2)"
+
+exit 0
