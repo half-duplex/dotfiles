@@ -60,9 +60,11 @@ cat >/etc/iptables/iptables.rules  <<EOF
 
 # Forwarding existing connections to the internal interface is fine
 -A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A FORWARD -i tun0 -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Internal network to universe is fine
 -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+-A FORWARD -i $INTIF -o tun0 -j ACCEPT
 
 # Don't forward traffic from outside to outside
 -A FORWARD -i $EXTIF -o $EXTIF -j REJECT
@@ -76,6 +78,7 @@ COMMIT
 
 # Masquerade outgoing for NAT
 -A POSTROUTING -o $EXTIF -j MASQUERADE
+-A POSTROUTING -o tun0 -j MASQUERADE
 
 COMMIT
 EOF
