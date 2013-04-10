@@ -1,0 +1,3 @@
+#!/bin/bash
+
+WINEPREFIX="/home/mal/.local/share/wineprefixes/steam/" exec wine C:\\Program\ Files\\steam\\steamapps\\common\\Borderlands\ 2\\Binaries\\Win32\\Borderlands2.exe $@

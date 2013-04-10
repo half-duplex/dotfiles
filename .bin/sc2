@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec wine C:\\Program\ Files\\Starcraft\ II\\Starcraft\ II.exe
