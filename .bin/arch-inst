@@ -140,7 +140,7 @@ EOF
 fi
 
 sed -i $TARGET/etc/sudoers -e "s/^# \%sudo.ALL/\%sudo ALL/"
-arch-chroot $TARGET groupadd sudo
+arch-chroot $TARGET groupadd sudo -r # -r for system group
 
 echo "Creating non-root user account..."
 arch-chroot $TARGET useradd -U -s /bin/bash -m -G sys,adm,disk,lp,wheel,uucp,locate,games,network,video,audio,optical,floppy,storage,scanner,power,users,sudo $MYUSERNAME
