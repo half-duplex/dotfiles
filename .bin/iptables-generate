@@ -69,6 +69,9 @@ cat >/etc/iptables/iptables.rules  <<EOF
 # Don't forward traffic from outside to outside
 -A FORWARD -i $EXTIF -o $EXTIF -j REJECT
 
+# Block youtube CDN crap
+#-A OUTPUT -d 206.111.0.0/16 -j REJECT
+
 COMMIT
 
 *nat
@@ -81,6 +84,17 @@ COMMIT
 -A POSTROUTING -o tun0 -j MASQUERADE
 
 COMMIT
+
+*mangle
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Set TTL statically because Norwich
+#-I OUTPUT -o eth0 -j TTL --ttl-set 64
+
+COMMIT
+
 EOF
 
 systemctl restart iptables
