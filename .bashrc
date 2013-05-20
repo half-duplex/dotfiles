@@ -15,3 +15,7 @@ export EDITOR="vim"
 
 alias marchnative='gcc -march=native -E -v - </dev/null 2>&1 | grep cc1'
 
+if [ -d "$HOME/.bin" ] ; then
+    export PATH="$HOME/.bin:$PATH"
+fi
+
