@@ -18,8 +18,9 @@ mount $TARGETPART $TARGET
 
 cd /tmp
 wget https://raw.github.com/mallegonian/mal-configs/master/.bin/arch-inst
-echo "Configure ./arch-inst to taste, then exit the shell."
-bash
+echo "Press [Enter] to configure arch-inst"
+read a
+vi arch-inst
 bash arch-inst
 
 arch-chroot $TARGET pacman --noconfirm -Sy kexec-tools
@@ -45,7 +46,10 @@ DNS=('4.2.2.1')
 EOF
 echo "Press [Enter] to configure networking"
 read a
+vi /
 arch-chroot $TARGET netctl enable eth0
 
 arch-chroot $TARGET systemctl enable sshd.socket
+
+echo "Assuming everything worked, reboot and SSH in."
 
