@@ -1,0 +1,8 @@
+#!/bin/bash
+# By Sean Buckley - sean.bck@gmail.com
+
+comm -23 <(
+    find /bin /etc /sbin /usr \( -type d -printf '%p/\n' -o -print \) | sort
+) <(
+    pacman -Qlq | sort -u
+)
