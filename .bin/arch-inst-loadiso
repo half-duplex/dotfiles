@@ -2,6 +2,8 @@
 # Originally by Sean Buckley, sean.bck@gmail.com
 set -ex
 
+$TARGETPART="/dev/vda"
+
 echo "This will install kexec and reboot to the arch iso. Press [Enter] to continue."
 read a
 
@@ -16,5 +18,5 @@ while ! mount -o ro,remount / ;do
     sleep 1
 done
 
-kexec --load "/arch/boot/`uname -m`/vmlinuz" --initrd="/arch/boot/`uname -m`/archiso.img" --append="archisodevice=/dev/sda copytoram=y"
+kexec --load "/arch/boot/`uname -m`/vmlinuz" --initrd="/arch/boot/`uname -m`/archiso.img" --append="archisodevice=$TARGETPART copytoram=y"
 kexec -e
