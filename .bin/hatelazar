@@ -1,0 +1,59 @@
+#!/usr/bin/python3 -tt
+
+from math import floor
+from time import sleep
+
+print('''
+                    WELCOME to the
+          __   ____  ____   __   ____   __   __
+         /  \ (  _ \(  _ \ (  ) (_  _) / _\ (  )
+        (  O ) )   / ) _ (  )(    )(  /    \/ (_/\\
+         \__/ (__\_)(____/ (__)  (__) \_/\_/\____/
+
+            _    _            _______   ______
+           | |  | |     /\   |__   __| |  ____|
+           | |__| |    /  \     | |    | |__
+           |  __  |   / /\ \    | |    |  __|
+           | |  | |  / ____ \   | |    | |____
+           |_|  |_| /_/    \_\  |_|    |______|
+
+              __     __   ____   __   ____
+             (  )   / _\ (__  ) / _\ (  _ \\
+             / (_/\/    \ / _/ /    \ )   /
+             \____/\_/\_/(____)\_/\_/(__\_)
+''')
+
+def pset(delay=0.5, strings=[]):
+    longest = 0
+    for thing in strings:
+        if len(thing) > longest:
+            longest = len(thing)
+    for thing in strings:
+        print("\r"+("{0: <"+str(longest)+"}").format(thing),end="")
+        sleep(delay)
+    print("")
+
+
+print("INITIALIZING...")
+pset(strings=["> ATOMIC BATTERIES","> OTHER STUFF","> INITIALIZED"])
+print("CHARGING...")
+for i in range(0,101):
+    pbarw = 50
+    print("\r"+"{0: <4}".format(str(i)+"%")+"["+("{0: <"+str(pbarw)+"}").format("#"*floor(i/(100/pbarw)))+"]",end="",sep="")
+    sleep(0.1)
+print("\n")
+print("ARMING...")
+sleep(2.89)
+print("FIRING")
+
+print('''
+ ________  .-./`)  .-------.         .-''-.
+|        | \ .-.') |  _ _   \      .'_ _   \\
+|   .----' / `-' \ | ( ' )  |     / ( ` )   '
+|  _|____   `-'`"` |(_ o _) /    . (_ o _)  |
+|_( )_   |  .---.  | (_,_).' __  |  (_,_)___|
+(_ o._)__|  |   |  |  |\ \  |  | '  \   .---.
+|(_,_)      |   |  |  | \ `'   /  \  `-'    /
+|   |       |   |  |  |  \    /    \       /
+'---'       '---'  ''-'   `'-'      `'-..-'
+''')
