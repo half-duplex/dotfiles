@@ -11,7 +11,7 @@ pacman --noconfirm -Sy kexec-tools
 
 mount /arch.iso /mnt
 #cp -r /mnt/arch /
-cp -r /mnt/arch /tmp/
+cp -r /mnt/arch/boot/`uname -m`/{vmlinuz,archiso.img} /tmp/
 umount /mnt
 
 while ! mount -o ro,remount / ;do
@@ -19,5 +19,5 @@ while ! mount -o ro,remount / ;do
     sleep 1
 done
 
-kexec --load "/tmp/arch/boot/`uname -m`/vmlinuz" --initrd="/tmp/arch/boot/`uname -m`/archiso.img" --append="archisodevice=$TARGETPART copytoram=y"
+kexec --load "/tmp/vmlinuz" --initrd="/tmp/archiso.img" --append="archisodevice=$TARGETPART copytoram=y"
 kexec -e

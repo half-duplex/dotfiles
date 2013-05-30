@@ -9,6 +9,7 @@ TARGETPART="$TARGETDEV"1
 echo "This will repartition and format $TARGETDEV! Press [Enter] to continue."
 read a
 
+dd if=/dev/zero of=$TARGETDEV bs=1024 count=1024 # need known state
 echo -ne "mklabel msdos\nmkpart p ext4 0% 100%\nq\n" | parted $TARGETDEV
 mkfs.ext4 -F $TARGETPART
 e2label $TARGETPART DOROOT # can't change the label on DigitalOcean
@@ -32,4 +33,19 @@ kexec -e
 exec /usr/lib/systemd/systemd
 EOF
 chmod 0755 $TARGET/sbin/init
+
+cat >$TARGET/etc/netctl/eth0 <<EOF
+Description='My connection'
+Interface=eth0
+Connection=ethernet
+IP=static
+Address=('YOUR.IP/24')
+Gateway='YOUR.GATEWAY'
+DNS=('4.2.2.1')
+EOF
+echo "Press [Enter] to configure networking"
+read a
+arch-chroot $TARGET netctl enable eth0
+
+arch-chroot $TARGET systemctl enable sshd.socket
 

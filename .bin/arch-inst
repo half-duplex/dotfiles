@@ -121,7 +121,7 @@ EOF
     arch-chroot $TARGET pacman -Sy yaourt --noconfirm $PACMANARGS
 fi
 
-if [ "$MULTIARCH" -eq "y" ] ; then
+if [ "x$MULTIARCH" == "xy" ] ; then
     # Can't use sed because the Include line in multilib is identical to others
     # Can't do this before the pacstrap line either, pacman.conf won't exist
     cat >>$TARGET/etc/pacman.conf <<EOF
@@ -151,6 +151,7 @@ if [ "x$SSDTARGET" == "xy" ] ; then
     cat >$TARGET/etc/udev/rules.d/60-schedulers.rules <<EOF
 # set deadline scheduler for non-rotating disks
 ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="deadline"
+ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="deadline"
 EOF
     sed -e "s/relatime/discard,noatime,nodiratime/g" -i $TARGET/etc/fstab
 fi
