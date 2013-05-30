@@ -2,6 +2,9 @@
 # Originally by Sean Buckley, sean.bck@gmail.com
 set -ex
 
+echo "This will install kexec and reboot to the arch iso. Press [Enter] to continue."
+read a
+
 pacman --noconfirm -Sy kexec-tools
 
 mount /arch.iso /mnt

@@ -6,6 +6,9 @@ $TARGET="/mnt"
 $TARGETDEV="/dev/sda"
 $TARGETPART="$TARGETDEV"1
 
+echo "This will repartition and format $TARGETDEV! Press [Enter] to continue."
+read a
+
 echo -ne "mklabel msdos\nmkpart p ext4 0% 100%\nq\n" | parted $TARGETDEV
 mkfs.ext4 -F $TARGETPART
 e2label /dev/sda DOROOT # can't change the label on DigitalOcean
