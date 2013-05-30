@@ -4,38 +4,38 @@
 
 # You must have already partitioned, formatted, and MOUNTED your target
 
-GUI="y"
+GUI="n"
 DVORAK="n"
-YAOURT="y"
+YAOURT="n"
+MULTIARCH="n" # may fail if =y on x86
 SSDTARGET="n"
-GFX="nvidia" # drivers: ati, ati-proprietary, intel, nouveau, nvidia, none
+GFX="none" # drivers: ati, ati-proprietary, intel, nouveau, nvidia, none
 LAPTOP="n"
-NETWORKMANAGER="y"
-AWESOMEWM="y"
-HOSTNAME="admincon03"
+NETWORKMANAGER="n"
+AWESOMEWM="n"
+HOSTNAME="arch"
 TARGET="/mnt"
 GRUBTARGET="/dev/sda"
 LOCALE="en_US.UTF-8"
 TIMEZONE="America/New_York"
-MYUSERNAME="vladmin"
-PACKAGES="tmux bash-completion os-prober htop strace lsof mtr xterm powertop"
-PACMANARGS="" #--arch i686" # helpful for --arch i686 or similar, is passed along with packages to pacstrap
+MYUSERNAME="admin"
+PACKAGES="tmux bash-completion htop strace lsof mtr" # os-prober
+PACMANARGS="" # helpful for --arch i686 or similar, is passed along with packages to pacstrap
 
-
-if [ -z "`mount | grep -E \" on $TARGET type \"`" ] ; then
+if [ -z "`mount | grep -E \"$GRUBTARGET.+ on $TARGET type \"`" ] ; then
     echo "You should have \$TARGET partitioned, formatted, and mounted."
     echo "You should also configure the top of this script to your setup."
     echo "Do that then run me again."
     exit 1
 fi
 
-echo -en "Hello, $MYUSERNAME@$HOSTNAME! About to install archlinux to $TARGET.\nPress [Enter] to continue:"
+echo -en "Hello, $MYUSERNAME@$HOSTNAME! About to install archlinux to $TARGET ($GRUBTARGET).\nPress [Enter] to continue:"
 read a
 
 PACKAGES="$PACKAGES base base-devel vim sudo grub-bios curl wget ca-certificates ntp openssh"
 #rm $TARGET/var/cache/pacman/pkg/*.tar.xz
 if [ "x$GUI" == "xy" ] ; then
-    PACKAGES="$PACKAGES xorg-server xorg-xinit xorg-server-utils awesome slim slim-themes archlinux-themes-slim"
+    PACKAGES="$PACKAGES xorg-server xorg-xinit xorg-server-utils awesome slim slim-themes archlinux-themes-slim xterm"
     case $GFX in
         ati) # untested
             PACKAGES="$PACKAGES xf86-video-ati" # xf86-video-vesa xf86-video-fbdev xf86-video-modesetting"
@@ -61,12 +61,12 @@ if [ "x$GUI" == "xy" ] ; then
             ;;
     esac
     if [ "x$LAPTOP" == "xy" ] ; then
-        PACKAGES="$PACKAGES xf86-input-synaptics"
+        PACKAGES="$PACKAGES xf86-input-synaptics powertop"
     fi
     if [ "x$NETWORKMANAGER" == "xy" ] ; then
         PACKAGES="$PACKAGES networkmanager network-manager-applet"
     else
-        PACKAGES="$PACKAGES netcfg"
+        PACKAGES="$PACKAGES netctl"
     fi
     if [ "x$AWESOMEWM" == "xy" ] ; then
         PACKAGES="$PACKAGES awesome slim slim-themes archlinux-themes-slim"
@@ -78,6 +78,8 @@ pacstrap $TARGET $PACKAGES $PACMANARGS
 if [ "x$GUI" == "xy" ] ; then
     if [ "x$NETWORKMANAGER" == "xy" ] ; then
         arch-chroot $TARGET systemctl enable NetworkManager.service
+    else
+        echo "Be sure to configure your networking in netctl!"
     fi
     if [ "x$AWESOMEWM" == "xy" ] ; then
         arch-chroot $TARGET systemctl enable slim.service
@@ -89,16 +91,18 @@ if [ "x$GUI" == "xy" ] ; then
     fi
 fi
 
+# Set up locales
 sed -i $TARGET/etc/locale.gen -e "s/#$LOCALE/$LOCALE/"
 echo "LANG=$LOCALE" >$TARGET/etc/locale.conf
 arch-chroot $TARGET locale-gen
 
-
+# Set up timezone and time
 arch-chroot $TARGET ln -s /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 # these are useless when blasting but important from live
-arch-chroot $TARGET ntpdate tick.usno.navy.mil
+arch-chroot $TARGET ntpdate pool.ntp.org
 arch-chroot $TARGET hwclock --systohc -u
 
+# Set up hostname
 echo "$HOSTNAME" >$TARGET/etc/hostname
 sed -i $TARGET/etc/hosts -e "s/localhost$/localhost $HOSTNAME/g"
 
@@ -117,10 +121,21 @@ EOF
     arch-chroot $TARGET pacman -Sy yaourt --noconfirm $PACMANARGS
 fi
 
+if [ "$MULTIARCH" -eq "y" ] ; then
+    # Can't use sed because the Include line in multilib is identical to others
+    # Can't do this before the pacstrap line either, pacman.conf won't exist
+    cat >>$TARGET/etc/pacman.conf <<EOF
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+EOF
+fi
+    
+
 if [ "x$DVORAK" == "xy" ] ; then
     echo "Configuring dvorak keymaps..."
     echo "KEYMAP=dvorak" >$TARGET/etc/vconsole.conf
-    cat >$TARGET/etc/X11/xorg.conf.d/10-dvorak.conf <<EOF
+    if [ "x$GUI" == "xy" ] ; then
+        cat >$TARGET/etc/X11/xorg.conf.d/10-dvorak.conf <<EOF
 Section "InputClass"
         Identifier             "keyboard-layout"
         MatchIsKeyboard        "on"
@@ -128,6 +143,7 @@ Section "InputClass"
         Option "XkbVariant"    "dvorak"
 EndSection
 EOF
+    fi # if GUI
 fi
 
 if [ "x$SSDTARGET" == "xy" ] ; then
@@ -146,8 +162,5 @@ echo "Creating non-root user account..."
 arch-chroot $TARGET useradd -U -s /bin/bash -m -G sys,adm,disk,lp,wheel,uucp,locate,games,network,video,audio,optical,floppy,storage,scanner,power,users,sudo $MYUSERNAME
 arch-chroot $TARGET passwd $MYUSERNAME
 arch-chroot $TARGET usermod -L root
-
-echo "Respond YES to both questions:"
-arch-chroot $TARGET pacman -Scc
 
 echo "Done!"

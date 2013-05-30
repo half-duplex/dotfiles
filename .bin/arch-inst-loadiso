@@ -1,0 +1,17 @@
+#!/bin/bash
+# Originally by Sean Buckley, sean.bck@gmail.com
+set -ex
+
+pacman --noconfirm -Sy kexec-tools
+
+mount /arch.iso /mnt
+cp -r /mnt/arch /
+umount /mnt
+
+while ! mount -o ro,remount / ;do
+    systemctl stop systemd-journald || true
+    sleep 1
+done
+
+kexec --load "/arch/boot/`uname -m`/vmlinuz" --initrd="/arch/boot/`uname -m`/archiso.img" --append="archisodevice=/dev/sda copytoram=y"
+kexec -e

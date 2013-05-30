@@ -1,0 +1,32 @@
+#!/bin/bash
+# Originally by Sean Buckley, sean.bck@gmail.com
+set -ex
+
+$TARGET="/mnt"
+$TARGETDEV="/dev/sda"
+$TARGETPART="$TARGETDEV"1
+
+echo -ne "mklabel msdos\nmkpart p ext4 0% 100%\nq\n" | parted $TARGETDEV
+mkfs.ext4 -F $TARGETPART
+e2label /dev/sda DOROOT # can't change the label on DigitalOcean
+mkdir -p $TARGET
+mount $TARGETPART $TARGET
+
+cd /tmp
+wget https://raw.github.com/mallegonian/mal-configs/master/.bin/arch-inst
+echo "Configure ./arch-inst to taste, then exit the shell."
+bash
+bash arch-inst
+
+arch-chroot $TARGET pacman --noconfirm -Sy kexec-tools
+arch-chroot $TARGET pacman --noconfirm -R systemd-sysvcompat
+
+cat >$TARGET/sbin/init <<EOF
+#!/bin/sh
+kexec --load "/boot/vmlinuz-linux" --initrd="/boot/initramfs-linux.img" --append="root=LABEL=DOROOT init=/usr/lib/systemd/systemd" &&
+mount -o ro,remount / &&
+kexec -e
+exec /usr/lib/systemd/systemd
+EOF
+chmod 0755 $TARGET/sbin/init
+
