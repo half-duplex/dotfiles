@@ -2,9 +2,9 @@
 # Originally by Sean Buckley, sean.bck@gmail.com
 set -ex
 
-$TARGET="/mnt"
-$TARGETDEV="/dev/vda"
-$TARGETPART="$TARGETDEV"1
+TARGET="/mnt"
+TARGETDEV="/dev/vda"
+TARGETPART="$TARGETDEV"1
 
 echo "This will repartition and format $TARGETDEV! Press [Enter] to continue."
 read a
