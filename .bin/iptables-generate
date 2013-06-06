@@ -46,11 +46,21 @@ cat >/etc/iptables/iptables.rules  <<EOF
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
 # TFTP server
--A INPUT -p udp --dport 69 -j ACCEPT
+-A INPUT -p udp --dport 69 -s 10.0.0.0/8 -j ACCEPT
+
+# darkhttpd
+-A INPUT -p tcp --dport 8080 -j ACCEPT
+
+# x11vnc
+-A INPUT -p tcp --dport 5900 -s 10.0.0.0/8 -j ACCEPT
 
 # Minecraft server
 -A INPUT -p tcp --dport 25565 -j ACCEPT
 -A INPUT -p udp --dport 25565 -j ACCEPT
+
+# Spotify network sync
+-A INPUT -p tcp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
+-A INPUT -p udp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 
 # Existing connections are fine
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
@@ -80,7 +90,8 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 
 # Masquerade outgoing for NAT
--A POSTROUTING -o $EXTIF -j MASQUERADE
+-A POSTROUTING -o $EXTIF -j MASQUERADE -s 10.7.0.0/24
+-A POSTROUTING -o $EXTIF -j MASQUERADE -s 172.16.42.0/24
 -A POSTROUTING -o tun0 -j MASQUERADE
 
 COMMIT
@@ -112,7 +123,7 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
 
-# Bad Stuff (don't copy over)
+# Bad Stuff (ipv6 only)
 -A INPUT -m rt --rt-type 0 -j DROP
 -A FORWARD -m rt --rt-type 0 -j DROP
 -A OUTPUT -m rt --rt-type 0 -j DROP
@@ -120,7 +131,8 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 -N LOGDROP
 -A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
 -A LOGDROP -p udp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "UDP LOGDROP: "
--A LOGDROP -p icmp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
+# icmpv6 for ipv6
+-A LOGDROP -p icmpv6 -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
 -A LOGDROP -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
 -A LOGDROP -j DROP
 
@@ -150,11 +162,21 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
 # TFTP server
--A INPUT -p udp --dport 69 -j ACCEPT
+#-A INPUT -p udp --dport 69 -s 10.0.0.0/8 -j ACCEPT
+
+# darkhttpd
+-A INPUT -p tcp --dport 8080 -j ACCEPT
+
+# x11vnc
+#-A INPUT -p tcp --dport 5900 -s 10.0.0.0/8 -j ACCEPT
 
 # Minecraft server
 -A INPUT -p tcp --dport 25565 -j ACCEPT
 -A INPUT -p udp --dport 25565 -j ACCEPT
+
+# Spotify network sync
+#-A INPUT -p tcp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
+#-A INPUT -p udp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 
 # Existing connections are fine
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
