@@ -1,4 +1,0 @@
-#!/bin/bash
-
-exec x11vnc -6 -display :0.0 -alwaysshared -shared -norepeat -usepw -forever -remap Control_R-Super_L # -ssl my.pem .x11vncrc
-

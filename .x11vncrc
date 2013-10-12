@@ -1,0 +1,22 @@
+6
+display :0.0
+alwaysshared
+shared
+norepeat
+usepw
+forever
+remap Control_R-Super_L
+scrollcopyrect
+xkb
+xdamage
+wireframe
+cursor most
+#ncache 10
+#ncache_cr
+gone '/usr/bin/i3lock &'
+#unixpw mal
+#solid
+xinerama
+#bg
+#clientdpms
+
