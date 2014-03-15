@@ -1,6 +1,7 @@
 #!/bin/sh
 
 DISPLAY=:0.0
+export DISPLAY
 
 case $1 in
    "play")
