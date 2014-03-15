@@ -1,24 +1,23 @@
 #!/bin/bash -ex
 
-# todo: enable multilib
 
 # You must have already partitioned, formatted, and MOUNTED your target
 
-GUI="n"
-DVORAK="n"
-YAOURT="n"
-MULTIARCH="n" # may fail if =y on x86
-SSDTARGET="n"
-GFX="none" # drivers: ati, ati-proprietary, intel, nouveau, nvidia, none
-LAPTOP="n"
-NETWORKMANAGER="n"
-AWESOMEWM="n"
-HOSTNAME="arch"
+GUI="y"
+DVORAK="y"
+YAOURT="y"
+MULTIARCH="y" # may fail if =y on x86
+SSDTARGET="y"
+GFX="intel" # drivers: ati, ati-proprietary, intel, nouveau, nvidia, none
+LAPTOP="y"
+NETWORKMANAGER="y"
+AWESOMEWM="y"
+HOSTNAME="jake"
 TARGET="/mnt"
 GRUBTARGET="/dev/sda"
 LOCALE="en_US.UTF-8"
-TIMEZONE="America/New_York"
-MYUSERNAME="admin"
+TIMEZONE="UTC"
+MYUSERNAME="mal"
 PACKAGES="tmux bash-completion htop strace lsof mtr" # os-prober
 PACMANARGS="" # helpful for --arch i686 or similar, is passed along with packages to pacstrap
 
@@ -31,6 +30,8 @@ fi
 
 echo -en "Hello, $MYUSERNAME@$HOSTNAME! About to install archlinux to $TARGET ($GRUBTARGET).\nPress [Enter] to continue:"
 read a
+
+pacman -Sy archlinux-keyring --noconfirm # important, otherwise the rest will likely fail w/ invalid sigs
 
 PACKAGES="$PACKAGES base base-devel vim sudo grub-bios curl wget ca-certificates ntp openssh"
 #rm $TARGET/var/cache/pacman/pkg/*.tar.xz
@@ -114,11 +115,17 @@ arch-chroot $TARGET grub-install $GRUBTARGET
 
 if [ "x$YAOURT" == "xy" ] ; then
     echo "Installing yaourt..."
-    cat >>$TARGET/etc/pacman.conf <<EOF
-[archlinuxfr]
-Server = http://repo.archlinux.fr/\$arch
+    cat >>$TARGET/yaourt.sh <<EOF
+mkdir /tmp/yaourt /tmp/package-query
+wget https://aur.archlinux.org/packages/ya/yaourt/PKGBUILD -O $TARGET/tmp/yaourt/PKGBUILD
+wget https://aur.archlinux.org/packages/pa/package-query/PKGBUILD -O $TARGET/tmp/package-query/PKGBUILD
+cd /tmp/package-query
+makepkg -i --noconfirm
+cd /tmp/yaourt
+makepkg -i --noconfirm
+rm -rf /tmp/yaourt /tmp/package-query /yaourt.sh
 EOF
-    arch-chroot $TARGET pacman -Sy yaourt --noconfirm $PACMANARGS
+    arch-chroot $TARGET bash /yaourt.sh
 fi
 
 if [ "x$MULTIARCH" == "xy" ] ; then
@@ -128,8 +135,8 @@ if [ "x$MULTIARCH" == "xy" ] ; then
 [multilib]
 Include = /etc/pacman.d/mirrorlist
 EOF
+    arch-chroot $TARGET pacman -Sy
 fi
-    
 
 if [ "x$DVORAK" == "xy" ] ; then
     echo "Configuring dvorak keymaps..."
@@ -151,7 +158,7 @@ if [ "x$SSDTARGET" == "xy" ] ; then
     cat >$TARGET/etc/udev/rules.d/60-schedulers.rules <<EOF
 # set deadline scheduler for non-rotating disks
 ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="deadline"
-ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="deadline"
+ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="noop"
 EOF
     sed -e "s/relatime/discard,noatime,nodiratime/g" -i $TARGET/etc/fstab
 fi
