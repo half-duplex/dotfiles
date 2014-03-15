@@ -2,7 +2,7 @@
 
 export WINEPREFIX="$HOME/.local/share/wineprefixes/steam"
 export WINEARCH=win32
-export WINEDEBUG="-all" # fixme-all or -all (or etc)
+export WINEDEBUG="fixme-all" # fixme-all disable all fixme, warn+all enable all warn, etc
 
 case $1 in
     run)
@@ -41,6 +41,12 @@ EOF
                     ;;
                 tf2)
                     ins=$ins/440
+                    ;;
+                gtaiv)
+                    ins=$ins/12210
+                    ;;
+                gtaiveflc)
+                    ins=$ins/12220
                     ;;
                 *)
                     echo "App not found, trying to run anyway."
