@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ps aux | grep redshift | grep -v grep >/dev/null ; then
+if pgrep redshift >/dev/null ; then
     echo -n
 else
     redshift-my &
@@ -8,9 +8,9 @@ fi
 
 nitrogen --restore &
 
-if ps aux | grep x11vnc | grep -v grep >/dev/null ; then
+if pgrep x11vnc >/dev/null ; then
     echo -n
 else
-    x11vnc -bg
+    x11vnc -bg & # fork immediately, otherwise awm startup delay
 fi
 
