@@ -13,7 +13,7 @@ wireframe
 cursor most
 #ncache 10
 #ncache_cr
-gone '/usr/bin/i3lock &'
+gone '/usr/bin/i3lock'
 #unixpw mal
 #solid
 xinerama
