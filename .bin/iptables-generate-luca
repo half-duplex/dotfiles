@@ -7,8 +7,7 @@ INTNET="172.16.42.0/24"
 LOGDROPLIMIT="2/s"
 LOGDROPLIMITBURST="10"
 
-mv /etc/iptables/iptables.rules /etc/iptables/iptables.rules.old
-cat >/etc/iptables/iptables.rules  <<EOF
+cat >/etc/iptables/iptables.rules.new  <<EOF
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
@@ -27,6 +26,9 @@ cat >/etc/iptables/iptables.rules  <<EOF
 -A LOGACCEPT -p icmp -j LOG --log-prefix "ICMP LOGACCEPT: "
 -A LOGACCEPT -f -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
 -A LOGACCEPT -j ACCEPT
+
+-N sshguard
+-A INPUT -p tcp --dport 22 -j sshguard
 
 # Loopback is always okay
 -A INPUT -i lo -j ACCEPT
@@ -47,6 +49,17 @@ cat >/etc/iptables/iptables.rules  <<EOF
 
 # TFTP server
 -A INPUT -p udp --dport 69 -s 10.0.0.0/8 -j ACCEPT
+
+# http/s
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# identd
+-A INPUT -p tcp --dport 113 -s 10.0.0.0/8 -j ACCEPT
+
+# smbd
+-A INPUT -p tcp --dport 139 -s 10.0.0.0/8 -j ACCEPT
+-A INPUT -p tcp --dport 445 -s 10.0.0.0/8 -j ACCEPT
 
 # darkhttpd
 -A INPUT -p tcp --dport 8080 -j ACCEPT
@@ -70,7 +83,8 @@ cat >/etc/iptables/iptables.rules  <<EOF
 
 # Forwarding existing connections to the internal interface is fine
 -A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
--A FORWARD -i tun0 -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A FORWARD -i tun0   -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A FORWARD -i tun1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Internal network to universe is fine
 -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
@@ -93,6 +107,7 @@ COMMIT
 -A POSTROUTING -o $EXTIF -j MASQUERADE -s 10.7.0.0/24
 -A POSTROUTING -o $EXTIF -j MASQUERADE -s 172.16.42.0/24
 -A POSTROUTING -o tun0 -j MASQUERADE
+-A POSTROUTING -o tun1 -j MASQUERADE
 
 COMMIT
 
@@ -108,16 +123,15 @@ COMMIT
 
 EOF
 
-systemctl restart iptables
+echo "Test /etc/iptables/iptables.rules.new"
 
 
 EXTIF=sixxs
 #INTIF=br0 # always br0 # leave set from above
 INTIP=2001:4830:119c::1
+# no change to log limits
 
-mv /etc/iptables/ip6tables.rules /etc/iptables/ip6tables.rules.old
-
-cat >/etc/iptables/ip6tables.rules <<EOF
+cat >/etc/iptables/ip6tables.rules.new <<EOF
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
@@ -127,6 +141,7 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 -A INPUT -m rt --rt-type 0 -j DROP
 -A FORWARD -m rt --rt-type 0 -j DROP
 -A OUTPUT -m rt --rt-type 0 -j DROP
+-A INPUT -i tun1 -j DROP
 
 -N LOGDROP
 -A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
@@ -143,6 +158,9 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 -A LOGACCEPT -p icmpv6 -j LOG --log-prefix "ICMP LOGACCEPT: "
 -A LOGACCEPT -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
 -A LOGACCEPT -j ACCEPT
+
+-N sshguard
+-A INPUT -p tcp --dport 22 -j sshguard
 
 # Loopback is always okay
 -A INPUT -i lo -j ACCEPT
@@ -163,6 +181,10 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 
 # TFTP server
 #-A INPUT -p udp --dport 69 -s 10.0.0.0/8 -j ACCEPT
+
+# smbd
+#-A INPUT -p tcp --dport 139 -s 10.0.0.0/8 -j ACCEPT
+#-A INPUT -p tcp --dport 445 -s 10.0.0.0/8 -j ACCEPT
 
 # darkhttpd
 -A INPUT -p tcp --dport 8080 -j ACCEPT
@@ -196,10 +218,5 @@ cat >/etc/iptables/ip6tables.rules <<EOF
 COMMIT
 EOF
 
-systemctl restart ip6tables
-
-
-#ip -6 ro add 2001:4830:119c::/48 dev lo
-#systemctl start radvd
-#systemctl start aiccu
+echo "Test /etc/iptables/ip6tables.rules.new"
 
