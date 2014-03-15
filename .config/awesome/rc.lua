@@ -288,8 +288,11 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("xfce4-screenshooter"                         ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
-    awful.key({ modkey, "Control" }, "Down"  , function () awful.util.spawn("gksu 'cpupower frequency-set -g ondemand'"   ) end),
     awful.key({ modkey, "Control" }, "Up"    , function () awful.util.spawn("gksu 'cpupower frequency-set -g performance'") end),
+    awful.key({ modkey, "Control" }, "Down"  , function () awful.util.spawn("gksu 'cpupower frequency-set -g ondemand'"   ) end),
+
+    awful.key({ "Control", "Alt" }, "Delete" , function () awful.util.spawn("gksu systemctl kexec") end),
+    awful.key({ "Control", "Alt" , "Shift" }, "Delete" , function () awful.util.spawn("systemctl reboot") end),
 
     awful.key({},         "XF86AudioMute"       , function () os.execute("volctl mute") end),
     awful.key({},         "XF86AudioLowerVolume", function () os.execute("volctl down") end),
@@ -302,7 +305,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "XF86AudioPrev",        function () os.execute("spotify-hotkey-sender.sh prev") end),
     awful.key({},         "XF86AudioPlay",        function () os.execute("spotify-hotkey.sh play") end),
     awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey.sh next") end),
-    awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end)
+    awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end),
+    awful.key({ modkey, "Shift" }, "a",         function () os.execute("setxkbmap dvorak") end),
+    awful.key({ modkey, "Shift" }, "m",         function () os.execute("setxkbmap us") end)
 
 )
 
@@ -387,17 +392,11 @@ awful.rules.rules = {
                      focus = awful.client.focus.filter,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "MPlayer" },
-      properties = { floating = true } },
     { rule = { class = "pinentry" },
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
     { rule = { class = "Pidgin" },
-      properties = { floating = true } },
-    { rule = { class = "Steam" },
-      properties = { floating = true } },
-    { rule = { class = "steam.exe" },
       properties = { floating = true } },
     { rule = { class = "InputOutput" }, -- qemu frontend
       properties = { floating = true } },
