@@ -33,3 +33,5 @@ xterm*foreground: #00ff00
 !*color7:  #cccccc
 !*color15: #ffffff
 
+xterm*utf8: 1
+
