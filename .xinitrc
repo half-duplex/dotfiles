@@ -18,6 +18,10 @@ if [ -f $HOME/.Xresources ]; then
     xrdb -merge $HOME/.Xresources
 fi
 
+if [ -d "$HOME/.bin" ] ; then
+    export PATH="$HOME/.bin:$PATH"
+fi
+
 DM=$1
 if [ -z "$DM" ] ; then
     DM="awm"
@@ -27,6 +31,10 @@ case $DM in
 awm|awesome)
     shift
     exec awesome $@
+    ;;
+i3|i3wm)
+    shift
+    exec i3 $@
     ;;
 xfce|xfce4)
     shift
