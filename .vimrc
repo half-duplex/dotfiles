@@ -27,8 +27,8 @@ au InsertLeave * :set rnu
 noremap H ^
 noremap L $
 
-" run python code
-map <f5> :w <CR>!clear <CR>:!python % <CR>
+" save and run (requires shebang and +x)
+map <F5> <Esc>:w<CR>:!clear<CR>:! time ./%<CR>
 
 " scroll before reaching edge
 set scrolloff=8 " Number of lines from vertical edge to start scrolling
