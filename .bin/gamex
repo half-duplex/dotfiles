@@ -1,3 +1,4 @@
 #!/bin/bash
 
-exec xinit $@ -- :1 vt08 -xf86config xorg.game.conf
+exec xinit $@ -- :1 vt$(($(ls /dev/vcs* | tail -n 1 | sed -re 's/\/dev\/vcsa?([0-9]+)/\1/')+1)) -xf86config xorg.game.conf
+exec xinit $@ -- :1 vt0$(($(ls /dev/vcs* | tail -n 1 | sed -re 's/\/dev\/vcsa?([0-9]+)/\1/')+1)) -xf86config xorg.game.conf
