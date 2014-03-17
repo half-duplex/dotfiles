@@ -1,9 +1,10 @@
 #!/bin/bash
 
 EXTIF="eth0"
-INTIF="eth1"
-INTIP="172.16.42.42"
-INTNET="172.16.42.0/24"
+INTIF="tun0"
+INTIFCTF="tun1"
+INTIP="10.8.0.1"
+INTNET="10.8.0.0/24"
 LOGDROPLIMIT="2/s"
 LOGDROPLIMITBURST="10"
 
@@ -12,6 +13,7 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
+:sshguard - [0:0]
 
 -N LOGDROP
 -A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
@@ -27,77 +29,96 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A LOGACCEPT -f -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
 -A LOGACCEPT -j ACCEPT
 
--N sshguard
--A INPUT -p tcp --dport 22 -j sshguard
-
 # Loopback is always okay
 -A INPUT -i lo -j ACCEPT
 
 # Any incoming not headed for the external IP drop (actually I don't want to
-# need $EXTIP if I don't need it )
+# need EXTIP if I don't need it )
 #-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
 
 # ICMP
 -A INPUT -p ICMP -j ACCEPT
 
-# DHCP server
--A INPUT -i $INTIF -p tcp --sport 67 --dport 68 -j ACCEPT
--A INPUT -i $INTIF -p udp --sport 67 --dport 68 -j ACCEPT
+# SSHGuard
+-A INPUT -p tcp -m tcp --dport 22 -j sshguard
 
 # SSH server
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
-# TFTP server
--A INPUT -p udp --dport 69 -s 10.0.0.0/8 -j ACCEPT
+# SMTP incoming
+-A INPUT -p tcp --dport 25 -j ACCEPT
 
-# http/s
+# DNS server
+-A INPUT -p tcp --dport 53 -j ACCEPT
+-A INPUT -p udp --dport 53 -j ACCEPT
+
+# ident
+-A INPUT -p tcp --dport 113 -j ACCEPT
+
+# HTTP/S server
 -A INPUT -p tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp --dport 443 -j ACCEPT
 
-# identd
--A INPUT -p tcp --dport 113 -s 10.0.0.0/8 -j ACCEPT
+# SMTP/TLS outgoing
+-A INPUT -p tcp --dport 465 -j ACCEPT
 
-# smbd
--A INPUT -p tcp --dport 139 -s 10.0.0.0/8 -j ACCEPT
--A INPUT -p tcp --dport 445 -s 10.0.0.0/8 -j ACCEPT
+# IMAP/TLS server
+-A INPUT -p tcp --dport 993 -j ACCEPT
 
-# darkhttpd
--A INPUT -p tcp --dport 8080 -j ACCEPT
+# OpenVPN server
+-A INPUT -p tcp --dport 1194 -j ACCEPT
+-A INPUT -p udp --dport 1194 -j ACCEPT
 
-# x11vnc
--A INPUT -p tcp --dport 5900 -s 10.0.0.0/8 -j ACCEPT
+# MySQL server
+-A INPUT -p tcp --dport 3306 -j ACCEPT
 
-# Minecraft server
--A INPUT -p tcp --dport 25565 -j ACCEPT
--A INPUT -p udp --dport 25565 -j ACCEPT
+# IRC server
+-A INPUT -p tcp --dport 6697 -j ACCEPT
 
-# Spotify network sync
--A INPUT -p tcp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
--A INPUT -p udp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
+# icecast
+-A INPUT -i $INTIF -p tcp --dport 8000 -s 10.8.0.0/16 -j ACCEPT
+
+# Teamspeak server
+-A INPUT -p udp --dport 9987 -j ACCEPT
+-A INPUT -p tcp --dport 30033 -j ACCEPT
+
+# Killing Floor server
+-A INPUT -p udp --dport 7707 -j ACCEPT
+-A INPUT -p udp --dport 7708 -j ACCEPT
+-A INPUT -p udp --dport 7717 -j ACCEPT
+-A INPUT -p tcp --dport 8075 -j ACCEPT
+-A INPUT -p tcp --dport 20560 -j ACCEPT
+-A INPUT -p udp --dport 20560 -j ACCEPT
+-A INPUT -p tcp --dport 28852 -j ACCEPT
+-A INPUT -p udp --dport 28852 -j ACCEPT
 
 # mosh
 -A INPUT -p udp --dport 60000:61000 -j ACCEPT
 
+# murmur
+-A INPUT -p tcp --dport 64738 -j ACCEPT
+-A INPUT -p udp --dport 64738 -j ACCEPT
+
 # Existing connections are fine
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# New ones are too unless they're from outside
--A INPUT -m conntrack --ctstate NEW ! -i $EXTIF -j ACCEPT
+
 
 # Forwarding existing connections to the internal interface is fine
--A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
--A FORWARD -i tun0   -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
--A FORWARD -i tun1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+#-A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+#-A FORWARD -i tun0 -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Internal network to universe is fine
--A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
--A FORWARD -i $INTIF -o tun0 -j ACCEPT
+-A FORWARD -i $INTIF -j ACCEPT
+
+# Port forwards
+-A FORWARD -o $INTIFCTF -p tcp --dport 22 -j ACCEPT
 
 # Don't forward traffic from outside to outside
--A FORWARD -i $EXTIF -o $EXTIF -j REJECT
+-A FORWARD -i $EXTIF -o $EXTIF -j DROP
 
-# Block youtube CDN crap
-#-A OUTPUT -d 206.111.0.0/16 -j REJECT
+
 
 COMMIT
 
@@ -107,32 +128,24 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 
 # Masquerade outgoing for NAT
--A POSTROUTING -o $EXTIF -j MASQUERADE -s 10.7.0.0/24
--A POSTROUTING -o $EXTIF -j MASQUERADE -s 172.16.42.0/24
--A POSTROUTING -o tun0 -j MASQUERADE
--A POSTROUTING -o tun1 -j MASQUERADE
+#-A POSTROUTING -o $EXTIF -j MASQUERADE
+#-A POSTROUTING -o tun0 -j MASQUERADE
+#-A POSTROUTING -o tun1 -j MASQUERADE
+-A POSTROUTING ! -o lo -j MASQUERADE
 
-COMMIT
+# Port forwards
+-A PREROUTING -p tcp --dport 23 -j DNAT --to 10.194.0.45:22
 
-*mangle
-:INPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
-
-# Set TTL statically because Norwich
-#-I OUTPUT -o eth0 -j TTL --ttl-set 64
 
 COMMIT
 
 EOF
 
-echo "Test /etc/iptables/iptables.rules.new"
+#systemctl restart iptables
 
-
+exit
 EXTIF=sixxs
-#INTIF=br0 # always br0 # leave set from above
-INTIP=2001:4830:119c::1
-# no change to log limits
+#INTIF=br0 # leave set from above
 
 cat >/etc/iptables/ip6tables.rules.new <<EOF
 *filter
@@ -140,16 +153,14 @@ cat >/etc/iptables/ip6tables.rules.new <<EOF
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
 
-# Bad Stuff (ipv6 only)
+# Bad Stuff (don't copy over)
 -A INPUT -m rt --rt-type 0 -j DROP
 -A FORWARD -m rt --rt-type 0 -j DROP
 -A OUTPUT -m rt --rt-type 0 -j DROP
--A INPUT -i tun1 -j DROP
 
 -N LOGDROP
 -A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
 -A LOGDROP -p udp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "UDP LOGDROP: "
-# icmpv6 for ipv6
 -A LOGDROP -p icmpv6 -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
 -A LOGDROP -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
 -A LOGDROP -j DROP
@@ -157,13 +168,9 @@ cat >/etc/iptables/ip6tables.rules.new <<EOF
 -N LOGACCEPT
 -A LOGACCEPT -p tcp -j LOG --log-prefix "TCP LOGACCEPT: "
 -A LOGACCEPT -p udp -j LOG --log-prefix "UDP LOGACCEPT: "
-# icmpv6 for ipv6
 -A LOGACCEPT -p icmpv6 -j LOG --log-prefix "ICMP LOGACCEPT: "
 -A LOGACCEPT -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
 -A LOGACCEPT -j ACCEPT
-
--N sshguard
--A INPUT -p tcp --dport 22 -j sshguard
 
 # Loopback is always okay
 -A INPUT -i lo -j ACCEPT
@@ -183,25 +190,11 @@ cat >/etc/iptables/ip6tables.rules.new <<EOF
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
 # TFTP server
-#-A INPUT -p udp --dport 69 -s 10.0.0.0/8 -j ACCEPT
-
-# smbd
-#-A INPUT -p tcp --dport 139 -s 10.0.0.0/8 -j ACCEPT
-#-A INPUT -p tcp --dport 445 -s 10.0.0.0/8 -j ACCEPT
-
-# darkhttpd
--A INPUT -p tcp --dport 8080 -j ACCEPT
-
-# x11vnc
-#-A INPUT -p tcp --dport 5900 -s 10.0.0.0/8 -j ACCEPT
+-A INPUT -p udp --dport 69 -j ACCEPT
 
 # Minecraft server
 -A INPUT -p tcp --dport 25565 -j ACCEPT
 -A INPUT -p udp --dport 25565 -j ACCEPT
-
-# Spotify network sync
-#-A INPUT -p tcp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
-#-A INPUT -p udp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 
 # Existing connections are fine
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
@@ -216,10 +209,11 @@ cat >/etc/iptables/ip6tables.rules.new <<EOF
 -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
 
 # Don't forward traffic from outside to outside
--A FORWARD -i $EXTIF -o $EXTIF -j REJECT
+-A FORWARD -i $EXTIF -o $EXTIF -j DROP
 
 COMMIT
 EOF
 
-echo "Test /etc/iptables/ip6tables.rules.new"
+echo "Enable failsafe in crontab, use iptables-restore on the .new, test, then replace iptables.rules with .new"
+echo "Don't forget ipv6"
 
