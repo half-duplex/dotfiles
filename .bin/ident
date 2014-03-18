@@ -1,0 +1,25 @@
+#!/usr/bin/python -tt
+
+userid = "mal"
+
+import socket
+
+s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind(('::', 113))
+s.listen(1)
+
+try:
+    while True:
+        conn, addr = s.accept()
+        data = conn.recv(256)
+        print("got ", data, " from " , addr)
+        resp = data[:-1] + bytes(" : USERID : UNIX : " + userid + "\r\n", "ascii")
+        print("rsp ", resp)
+        conn.send(resp)
+        conn.close()
+except KeyboardInterrupt:
+    s.shutdown(socket.SHUT_RDWR)
+    s.close()
+
+
