@@ -6,7 +6,6 @@ norepeat
 usepw
 forever
 remap Control_R-Super_L
-scrollcopyrect
 xkb
 xdamage
 wireframe
