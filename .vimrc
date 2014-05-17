@@ -50,6 +50,7 @@ nnoremap U <C-r>
 
 " I can type :help on my own, thanks.
 noremap <F1> <Esc>
+inoremap <F1> <Esc>
 
 " disable arrow keys
 inoremap  <Up>     <NOP>
