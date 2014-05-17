@@ -7,7 +7,7 @@ import socket
 s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(('::', 113))
-s.listen(1)
+s.listen(5)
 
 try:
     while True:
