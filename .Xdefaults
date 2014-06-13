@@ -35,3 +35,11 @@ xterm*foreground: #00ff00
 
 xterm*utf8: 1
 
+URxvt*urlLauncher:      firefox
+URxvt*scrollBar:        false
+URxvt*background:       Black
+URxvt*foreground:       Green
+URxvt*jumpScroll:       true
+URxvt*scrollTtyOutput:  false
+URxvt*mouseWheelScrollPage: false
+
