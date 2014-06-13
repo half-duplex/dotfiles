@@ -84,20 +84,28 @@ end
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 myawesomemenu = {
-   { "manual", terminal .. " -e man awesome" },
-   { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart awm", awesome.restart },
    { "suspend", "locksuspend" },
    { "logout", awesome.quit },
-   { "reboot", "reboot" },
-   { "poweroff", "poweroff" }
+   { "kexec reboot", "gksu systemctl kexec" },
+   { "reboot", "systemctl reboot" },
+   { "poweroff", "systemctl poweroff" }
+}
+
+screencfgmenu = {
+    { "normal", "screencfg normal" },
+    { "16:9", "screencfg vnc" },
+    { "4:3", "screencfg vnc2" },
+    { "tiny", "screencfg tiny" }
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "open terminal", terminal },
+                                    { "screencfg", screencfgmenu },
+                                    { "terminal", terminal },
                                     { "firefox", "firefox" },
+                                    { "thunar", "thunar" },
                                     { "spotify", "spotify" },
-                                    { "lock", "i3lock -u -i /home/mal/Pictures/misc/win-desktop-dual.png -p win -c 000000" },
+                                    { "lock", "i3lock -u -i /home/mal/library/pictures/misc/win-desktop-dual.png -p win -c 000000" },
                                     { "run", function() mypromptbox[mouse.screen]:run() end }
                                   }
                         })
@@ -284,7 +292,7 @@ globalkeys = awful.util.table.join(
 
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -u -i /home/mal/Pictures/misc/win-desktop-dual.png -p win -c 000000") end),
+    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -u -i /home/mal/library/pictures/misc/win-desktop-dual.png -p win -c 000000") end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("xfce4-screenshooter"                         ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
