@@ -1,45 +1,49 @@
-! xterm ----------------------------------------------------------------------
+! helpful: http://www.cssdrive.com/imagepalette/index.php
+! helpful: http://www.colorhexa.com/
 
-xterm*background: #000000
-xterm*foreground: #00ff00
+*background: #252525
+*foreground: #90b3b3
 
-! terminal colors ------------------------------------------------------------
-
-! tangoesque scheme
-!*background: #111111
-!*foreground: #babdb6
-! Black (not tango) + DarkGrey
-!*color0:  #000000
-!*color8:  #555753
+! x;3y;4z x=style y=fg (colory) z=bg (colorz+8)
+! Black + DarkGrey
+*color0:  #5b5b5b
+*color8:  #737373
 ! DarkRed + Red
-!*color1:  #ff6565
-!*color9:  #ff8d8d
+*color1:  #9c748f
+*color9:  #c392b3
 ! DarkGreen + Green
-!*color2:  #93d44f
-!*color10: #c8e7a8
+*color2:  #615375
+*color10: #7a6994
 ! DarkYellow + Yellow
-!*color3:  #eab93d
-!*color11: #ffc123
+*color3:  #5d78ab
+*color11: #7496d6
 ! DarkBlue + Blue
-*color4:  #006cff
-!*color12: #3465a4
+*color4:  #31548f
+*color12: #3d69b3
 ! DarkMangenta + Mangenta
-!*color5:  #ce5c00
-!*color13: #f57900
-!DarkCyan + Cyan (both not tango)
-!*color6:  #89b6e2
-!*color14: #46a4ff
+*color5:  #6264e3
+*color13: #6e70ff
+! DarkCyan + Cyan
+*color6:  #1f91cc
+*color14: #27b5ff
 ! LightGrey + White
-!*color7:  #cccccc
-!*color15: #ffffff
+*color7:  #90b3b3
+*color15: #b3dede
 
-xterm*utf8: 1
+*utf8: 1
 
-URxvt*urlLauncher:      firefox
 URxvt*scrollBar:        false
-URxvt*background:       Black
-URxvt*foreground:       Green
 URxvt*jumpScroll:       true
 URxvt*scrollTtyOutput:  false
+URxvt*scrollTtyKeypress: true
 URxvt*mouseWheelScrollPage: false
+URxvt.font:             6x13
+!URxvt.font:             xft:Liberation Mono:size=8:antialias=true
+URxvt*iso14755:         False
+
+URxvt.perl-ext-common: default,matcher,clipboard
+URxvt.url-launcher: /usr/bin/xdg-open
+URxvt.matcher.button: 1
+URxvt.keysym.Shift-Control-C: perl:clipboard:copy
+URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 
