@@ -4,13 +4,23 @@
 
 case $1 in
     normal)
-        xrandr -d :0.0 --screen 0 --output DVI-I-2 --auto --scale-from 1920x1080 --output DVI-I-1 --auto --pos 1920x56
+        #xrandr -d :0.0 --screen 0 --output DVI-D-0 --auto --scale-from 1920x1080 --panning 1920x1080+0+0 --output DVI-I-0 --auto --panning 1280x1024+0+0 --pos 1920x56
+        xrandr -d :0.0 --screen 0 --output DVI-D-0 --auto --scale-from 1920x1080 --output DVI-I-0 --auto --pos 1920x56
         ;;
     vnc)
-        xrandr -d :0.0 --screen 0 --output DVI-I-1 --off --output DVI-I-2 --scale-from 1280x720
+        xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 1280x720 --output DVI-D-0 --scale-from 1280x720
         ;;
     vnc2)
-        xrandr -d :0.0 --screen 0 --output DVI-I-1 --off --fb 1280x960 --output DVI-I-2 --mode 1280x960
+        xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 1280x960 --output DVI-D-0 --mode 1280x960
+        ;;
+    toshiba)
+        xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 1280x960 --output DVI-D-0 --mode 1280x
+        ;;
+    tiny)
+        xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 800x600 --output DVI-D-0 --mode 800x600
+        ;;
+    micro)
+        xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 640x480 --output DVI-D-0 --mode 640x480
         ;;
     *)
         echo "Usage: $0 [normal|vnc]"
