@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EXTIF="eth0"
+EXTIF6="sixxs"
 INTIF="tun0"
 INTIFCTF="tun1"
 LOGDROPLIMIT="2/s"
@@ -16,16 +17,23 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -N LOGDROP
 -A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
 -A LOGDROP -p udp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "UDP LOGDROP: "
--A LOGDROP -p icmp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
--A LOGDROP -f -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
+-4 -A LOGDROP -p icmp   -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
+-6 -A LOGDROP -p icmpv6 -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
+-4 -A LOGDROP -f -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
 -A LOGDROP -j DROP
 
 -N LOGACCEPT
 -A LOGACCEPT -p tcp -j LOG --log-prefix "TCP LOGACCEPT: "
 -A LOGACCEPT -p udp -j LOG --log-prefix "UDP LOGACCEPT: "
--A LOGACCEPT -p icmp -j LOG --log-prefix "ICMP LOGACCEPT: "
--A LOGACCEPT -f -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
+-4 -A LOGACCEPT -p icmp   -j LOG --log-prefix "ICMP LOGACCEPT: "
+-6 -A LOGACCEPT -p icmpv6 -j LOG --log-prefix "ICMP LOGACCEPT: "
+-4 -A LOGACCEPT -f -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
 -A LOGACCEPT -j ACCEPT
+
+# Bad v6 Stuff
+-6 -A INPUT   -m rt --rt-type 0 -j DROP
+-6 -A FORWARD -m rt --rt-type 0 -j DROP
+-6 -A OUTPUT  -m rt --rt-type 0 -j DROP
 
 # Loopback is always okay
 -A INPUT -i lo -j ACCEPT
@@ -35,14 +43,18 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 
 # Any incoming not headed for the external IP drop (actually I don't want to
 # need EXTIP if I don't need it )
-#-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
+#-4 -A INPUT -i $EXTIF  ! -d $EXTIP  -j DROP
+#-6 -A INPUT -i $EXTIF6 ! -d $EXTIP6 -j DROP
+
+# SSHGuard, block all traffic from sources that trip sshguard
+-A INPUT -j sshguard
+
+# Existing connections are fine
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # ICMP
--A INPUT -p ICMP -j ACCEPT
-
-# SSHGuard
-#-A INPUT -p tcp -m tcp --dport 22 -j sshguard
--A INPUT -j sshguard
+-4 -A INPUT -p icmp   -j ACCEPT
+-6 -A INPUT -p icmpv6 -j ACCEPT
 
 # SSH server
 -A INPUT -p tcp --dport 22 -j ACCEPT
@@ -58,7 +70,7 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p tcp --dport 113 -j ACCEPT
 
 # HTTP/S server
--A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport  80 -j ACCEPT
 -A INPUT -p tcp --dport 443 -j ACCEPT
 
 # SMTP/TLS outgoing
@@ -71,14 +83,8 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p tcp --dport 1194 -j ACCEPT
 -A INPUT -p udp --dport 1194 -j ACCEPT
 
-# MySQL server
--A INPUT -p tcp --dport 3306 -j ACCEPT
-
 # IRC server
 -A INPUT -p tcp --dport 6697 -j ACCEPT
-
-# icecast
-#-A INPUT -i $INTIF -p tcp --dport 8000 -s 10.8.0.0/16 -j ACCEPT
 
 # TOR
 -A INPUT -p tcp --dport 9909 -j ACCEPT
@@ -87,18 +93,8 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p udp --dport 9939 -j ACCEPT
 
 # Teamspeak server
--A INPUT -p udp --dport 9987 -j ACCEPT
+-A INPUT -p udp --dport  9987 -j ACCEPT
 -A INPUT -p tcp --dport 30033 -j ACCEPT
-
-# Killing Floor server
--A INPUT -p udp --dport 7707 -j ACCEPT
--A INPUT -p udp --dport 7708 -j ACCEPT
--A INPUT -p udp --dport 7717 -j ACCEPT
--A INPUT -p tcp --dport 8075 -j ACCEPT
--A INPUT -p tcp --dport 20560 -j ACCEPT
--A INPUT -p udp --dport 20560 -j ACCEPT
--A INPUT -p tcp --dport 28852 -j ACCEPT
--A INPUT -p udp --dport 28852 -j ACCEPT
 
 # CJDNS
 -A INPUT -p udp --dport 15069 -j ACCEPT
@@ -110,12 +106,9 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p tcp --dport 64738 -j ACCEPT
 -A INPUT -p udp --dport 64738 -j ACCEPT
 
-# Existing connections are fine
--A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 
-
-# Forwarding existing connections to the internal interface is fine
+# Forwarding existing connections is fine
 -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Internal network to universe is fine
@@ -126,10 +119,14 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 
 # Don't forward traffic from outside to outside
 -A FORWARD -i $EXTIF -o $EXTIF -j DROP
+-A FORWARD -i $INTIFCTF -o $INTIFCTF -j DROP
+-A FORWARD -i $EXTIF6 -o $EXTIF6 -j DROP
+
 
 
 # Fuck t-mobile and their dns hijacking
--A OUTPUT -d lookup.t-mobile.com -j REJECT
+-4 -A OUTPUT -d lookup.t-mobile.com -j REJECT
+
 
 
 COMMIT
@@ -140,91 +137,21 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 
 # Masquerade outgoing for NAT
-#-A POSTROUTING -o $EXTIF -j MASQUERADE
-#-A POSTROUTING -o tun0 -j MASQUERADE
-#-A POSTROUTING -o tun1 -j MASQUERADE
 -A POSTROUTING ! -o lo -j MASQUERADE
 
 # Port forwards
--A PREROUTING -p tcp --dport 23 -j DNAT --to 10.194.0.45:22
+-4 -A PREROUTING -p tcp --dport 23 -j DNAT --to 10.194.0.45:22
 
-
-COMMIT
-
-EOF
-
-#systemctl restart iptables
-
-EXTIF=sixxs
-#INTIF=br0 # leave set from above
-
-cat >/etc/iptables/ip6tables.rules.new <<EOF
-*filter
-:INPUT DROP [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT ACCEPT [0:0]
-
-# Bad Stuff (don't copy over)
--A INPUT -m rt --rt-type 0 -j DROP
--A FORWARD -m rt --rt-type 0 -j DROP
--A OUTPUT -m rt --rt-type 0 -j DROP
-
--N LOGDROP
--A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
--A LOGDROP -p udp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "UDP LOGDROP: "
--A LOGDROP -p icmpv6 -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
--A LOGDROP -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
--A LOGDROP -j DROP
-
--N LOGACCEPT
--A LOGACCEPT -p tcp -j LOG --log-prefix "TCP LOGACCEPT: "
--A LOGACCEPT -p udp -j LOG --log-prefix "UDP LOGACCEPT: "
--A LOGACCEPT -p icmpv6 -j LOG --log-prefix "ICMP LOGACCEPT: "
--A LOGACCEPT -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
--A LOGACCEPT -j ACCEPT
-
-# Loopback is always okay
--A INPUT -i lo -j ACCEPT
-
-# Any incoming not headed for the external IP drop (actually I don't want to
-# need $EXTIP if I don't need it )
-#-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
-
-# ICMP
--A INPUT -p ICMP -j ACCEPT
-
-# DHCP server
--A INPUT -i $INTIF -p tcp --sport 67 --dport 68 -j ACCEPT
--A INPUT -i $INTIF -p udp --sport 67 --dport 68 -j ACCEPT
-
-# SSH server
--A INPUT -p tcp --dport 22 -j ACCEPT
-
-# TFTP server
--A INPUT -p udp --dport 69 -j ACCEPT
-
-# Minecraft server
--A INPUT -p tcp --dport 25565 -j ACCEPT
--A INPUT -p udp --dport 25565 -j ACCEPT
-
-# Existing connections are fine
--A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-# New ones are too unless they're from outside
--A INPUT -m conntrack --ctstate NEW ! -i $EXTIF -j ACCEPT
-
-# Forwarding existing connections to the internal interface is fine
--A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-# Internal network to universe is fine
--A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
-
-# Don't forward traffic from outside to outside
--A FORWARD -i $EXTIF -o $EXTIF -j DROP
 
 COMMIT
 EOF
 
-echo "Enable failsafe in crontab, use iptables-restore on the .new, test, then replace iptables.rules with .new"
-echo "Don't forget ipv6"
+cat <<EOF
+- Enable failsafe in crontab
+- Use iptables-restore AND ip6tables-restore on /etc/iptables/iptables.rules.new
+- Test stuff
+- Move iptables.rules.new to iptables.rules
+- Turn off crontab failsafe
+- Restart sshguard so it'll re-block continuing offenders
+EOF
 
