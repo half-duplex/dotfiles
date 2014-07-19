@@ -3,8 +3,6 @@
 EXTIF="eth0"
 INTIF="tun0"
 INTIFCTF="tun1"
-INTIP="10.8.0.1"
-INTNET="10.8.0.0/24"
 LOGDROPLIMIT="2/s"
 LOGDROPLIMITBURST="10"
 
@@ -32,6 +30,9 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 # Loopback is always okay
 -A INPUT -i lo -j ACCEPT
 
+# Internal network traffic is always okay
+-A INPUT -i $INTIF -j ACCEPT
+
 # Any incoming not headed for the external IP drop (actually I don't want to
 # need EXTIP if I don't need it )
 #-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
@@ -40,7 +41,8 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p ICMP -j ACCEPT
 
 # SSHGuard
--A INPUT -p tcp -m tcp --dport 22 -j sshguard
+#-A INPUT -p tcp -m tcp --dport 22 -j sshguard
+-A INPUT -j sshguard
 
 # SSH server
 -A INPUT -p tcp --dport 22 -j ACCEPT
@@ -76,7 +78,13 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p tcp --dport 6697 -j ACCEPT
 
 # icecast
--A INPUT -i $INTIF -p tcp --dport 8000 -s 10.8.0.0/16 -j ACCEPT
+#-A INPUT -i $INTIF -p tcp --dport 8000 -s 10.8.0.0/16 -j ACCEPT
+
+# TOR
+-A INPUT -p tcp --dport 9909 -j ACCEPT
+-A INPUT -p udp --dport 9909 -j ACCEPT
+-A INPUT -p tcp --dport 9939 -j ACCEPT
+-A INPUT -p udp --dport 9939 -j ACCEPT
 
 # Teamspeak server
 -A INPUT -p udp --dport 9987 -j ACCEPT
@@ -92,6 +100,9 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p tcp --dport 28852 -j ACCEPT
 -A INPUT -p udp --dport 28852 -j ACCEPT
 
+# CJDNS
+-A INPUT -p udp --dport 15069 -j ACCEPT
+
 # mosh
 -A INPUT -p udp --dport 60000:61000 -j ACCEPT
 
@@ -105,8 +116,6 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 
 
 # Forwarding existing connections to the internal interface is fine
-#-A FORWARD -i $EXTIF -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-#-A FORWARD -i tun0 -o $INTIF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Internal network to universe is fine
@@ -118,6 +127,9 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 # Don't forward traffic from outside to outside
 -A FORWARD -i $EXTIF -o $EXTIF -j DROP
 
+
+# Fuck t-mobile and their dns hijacking
+-A OUTPUT -d lookup.t-mobile.com -j REJECT
 
 
 COMMIT
@@ -143,7 +155,6 @@ EOF
 
 #systemctl restart iptables
 
-exit
 EXTIF=sixxs
 #INTIF=br0 # leave set from above
 
