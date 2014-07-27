@@ -4,6 +4,7 @@ EXTIF="eth0"
 EXTIF6="sixxs"
 INTIF="tun0"
 INTIFCTF="tun1"
+
 LOGDROPLIMIT="2/s"
 LOGDROPLIMITBURST="10"
 
@@ -30,10 +31,14 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -4 -A LOGACCEPT -f -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
 -A LOGACCEPT -j ACCEPT
 
+
+
 # Bad v6 Stuff
 -6 -A INPUT   -m rt --rt-type 0 -j DROP
 -6 -A FORWARD -m rt --rt-type 0 -j DROP
 -6 -A OUTPUT  -m rt --rt-type 0 -j DROP
+
+
 
 # Loopback is always okay
 -A INPUT -i lo -j ACCEPT
@@ -118,9 +123,9 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A FORWARD -o $INTIFCTF -p tcp --dport 22 -j ACCEPT
 
 # Don't forward traffic from outside to outside
--A FORWARD -i $EXTIF -o $EXTIF -j DROP
+-A FORWARD -i $EXTIF    -o $EXTIF    -j DROP
 -A FORWARD -i $INTIFCTF -o $INTIFCTF -j DROP
--A FORWARD -i $EXTIF6 -o $EXTIF6 -j DROP
+-A FORWARD -i $EXTIF6   -o $EXTIF6   -j DROP
 
 
 
@@ -141,7 +146,6 @@ COMMIT
 
 # Port forwards
 -4 -A PREROUTING -p tcp --dport 23 -j DNAT --to 10.194.0.45:22
-
 
 COMMIT
 EOF
