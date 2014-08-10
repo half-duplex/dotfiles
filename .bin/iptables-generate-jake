@@ -1,0 +1,74 @@
+#!/bin/bash
+
+LOGDROPLIMIT="2/s"
+LOGDROPLIMITBURST="10"
+
+cat >/etc/iptables/iptables.rules.new  <<EOF
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+-N LOGDROP
+-A LOGDROP -p tcp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "TCP LOGDROP: "
+-A LOGDROP -p udp -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "UDP LOGDROP: "
+-4 -A LOGDROP -p icmp   -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
+-6 -A LOGDROP -p icmpv6 -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "ICMP LOGDROP: "
+-4 -A LOGDROP -f -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
+-6 -A LOGDROP    -m limit --limit $LOGDROPLIMIT --limit-burst $LOGDROPLIMITBURST -j LOG --log-prefix "FRAGMENT LOGDROP: "
+-A LOGDROP -j DROP
+
+-N LOGACCEPT
+-A LOGACCEPT -p tcp -j LOG --log-prefix "TCP LOGACCEPT: "
+-A LOGACCEPT -p udp -j LOG --log-prefix "UDP LOGACCEPT: "
+-4 -A LOGACCEPT -p icmp   -j LOG --log-prefix "ICMP LOGACCEPT: "
+-6 -A LOGACCEPT -p icmpv6 -j LOG --log-prefix "ICMP LOGACCEPT: "
+-4 -A LOGACCEPT -f -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
+-6 -A LOGACCEPT    -j LOG --log-prefix "FRAGMENT LOGACCEPT: "
+-A LOGACCEPT -j ACCEPT
+
+-N sshguard
+-A INPUT -p tcp --dport 22 -j sshguard
+
+# Loopback is always okay
+-A INPUT -i lo -j ACCEPT
+
+# Any incoming not headed for the external IP drop (actually I don't want to need $EXTIP if I don't need it )
+#-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
+
+# SSH, MoSH
+#-A INPUT -p tcp --dport 22 -j ACCEPT
+#-A INPUT -p udp --dport 60000:61000 -j ACCEPT
+
+# Existing connections are fine
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+-A INPUT -j LOGDROP
+-A FORWARD -j LOGDROP
+
+# Block youtube CDN crap
+#-4 -A OUTPUT -d 206.111.0.0/16 -j REJECT
+
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Masquerade outgoing for NAT
+#-A POSTROUTING ! -o lo -j MASQUERADE
+
+COMMIT
+
+*mangle
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+COMMIT
+
+EOF
+
+echo "Test /etc/iptables/iptables.rules.new with iptables and ip6tables"
+
