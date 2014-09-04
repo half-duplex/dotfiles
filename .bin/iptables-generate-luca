@@ -95,7 +95,8 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p tcp --dport 9989 -j ACCEPT
 
 # x11vnc
--4 -A INPUT -p tcp --dport 5900 -s 10.0.0.0/8 -j ACCEPT
+-4 -A INPUT -p tcp --dport 5900 -s 10.0.0.0/8     -j ACCEPT
+-4 -A INPUT -p tcp --dport 5900 -s 192.168.0.0/16 -j ACCEPT
 
 # Minecraft server
 -A INPUT -p tcp --dport 25565 -j ACCEPT
@@ -105,6 +106,11 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p udp --dport 1200 -j ACCEPT
 -A INPUT -p udp --dport 27000:27015 -j ACCEPT
 -A INPUT -p tcp --dport 27020:27039 -j ACCEPT
+
+# Steam In-Home Streaming
+-A INPUT -p udp --dport 27031 -j ACCEPT
+-A INPUT -p udp --dport 27036 -j ACCEPT
+-A INPUT -p tcp --dport 27036:27037 -j ACCEPT
 
 # Spotify network sync
 -4 -A INPUT -p tcp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
