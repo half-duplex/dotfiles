@@ -16,6 +16,9 @@ case $1 in
     toshiba)
         xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 1280x960 --output DVI-D-0 --mode 1280x
         ;;
+    netbook)
+        xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 1024x600 --output DVI-D-0 --mode 1024x600
+        ;;
     tiny)
         xrandr -d :0.0 --screen 0 --output DVI-I-0 --off --fb 800x600 --output DVI-D-0 --mode 800x600
         ;;
