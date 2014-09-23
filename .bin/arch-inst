@@ -18,7 +18,7 @@ GRUBTARGET="/dev/sda"
 LOCALE="en_US.UTF-8"
 TIMEZONE="UTC"
 MYUSERNAME="mal"
-PACKAGES="tmux bash-completion htop strace lsof mtr" # os-prober
+PACKAGES="tmux bash-completion htop strace lsof mtr whois dnsutils vim" # os-prober
 PACMANARGS="" # helpful for --arch i686 or similar, is passed along with packages to pacstrap
 
 if [ -z "`mount | grep -E \"$GRUBTARGET.+ on $TARGET type \"`" ] ; then
