@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOCATION="44.136186:-72.661771"
+LOCATION="42.587:-73.693"
 
 for i in {0..3}
 do
