@@ -9,6 +9,8 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(('::', 113))
 s.listen(5)
 
+print("Listening...")
+
 try:
     while True:
         conn, addr = s.accept()
