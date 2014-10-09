@@ -1,4 +1,4 @@
-#!/bin/sh -ex
+#!/bin/sh
 #
 # ~/.xinitrc
 #
@@ -43,7 +43,6 @@ xfce|xfce4)
 *)
     echo ".xinitrc: Unrecognized session type, exec anyway"
     exec $@
-    echo "wtf"
     ;;
 esac
 
