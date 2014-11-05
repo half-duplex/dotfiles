@@ -33,7 +33,7 @@ read a
 
 pacman -Sy archlinux-keyring --noconfirm # important, otherwise the rest will likely fail w/ invalid sigs
 
-PACKAGES="$PACKAGES base base-devel vim sudo grub-bios wget ntp openssh git rxvt-unicode-terminfo rsync"
+PACKAGES="$PACKAGES base base-devel vim sudo grub-bios wget ntp openssh git rxvt-unicode-terminfo rsync bridge-utils net-tools"
 #rm $TARGET/var/cache/pacman/pkg/*.tar.xz
 if [ "x$GUI" == "xy" ] ; then
     PACKAGES="$PACKAGES xorg-server xorg-xinit xorg-server-utils awesome slim slim-themes archlinux-themes-slim xterm"
