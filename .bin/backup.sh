@@ -11,7 +11,7 @@ case $@ in
         exit
         ;;
     all)
-        STUFFTOBU="luca milo eva nucacdf-web"
+        STUFFTOBU="luca eva nucacdf-web"
         ;;
     *)
         STUFFTOBU="$@"
@@ -21,7 +21,7 @@ esac
 START=$(date +%s)
 
 ARGS="-aXgoplEh --info=progress2"
-BUDIR="/media/bulk1/backups"
+BUDIR="/media/bulk/backups"
 PARGS="--exclude-from /home/mal/.bin/backup.exclude.txt --delete"
 SSHARGS="-i /home/mal/.ssh/id_rsa"
 
@@ -31,10 +31,6 @@ for butarget in $STUFFTOBU ; do
     case $butarget in
         luca)
             rsync $ARGS / $BUDIR/luca $PARGS
-            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/backupinfo.txt
-            ;;
-        milo)
-            rsync $ARGS -e "ssh $SSHARGS" root@milo:/ $BUDIR/milo $PARGS
             echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/backupinfo.txt
             ;;
         eva)

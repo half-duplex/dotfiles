@@ -8,7 +8,7 @@ jopts="-Xmx2G -Xincgc"
 
 case $1 in
     ftb|feedthebeast|*)
-        cd ~/.bin/usr/local/
+        cd ~/.bin/data/
         exec $java -jar FTB_Launcher.jar
         ;;
     spout|spoutcraft)
@@ -16,7 +16,7 @@ case $1 in
         exec $java -jar Spoutcraft.jar
         ;;
     mc|minecraft)
-        cd ~/.bin/usr/local/
+        cd ~/.bin/data/
         exec $java $jopts -jar minecraft.jar
         ;;
 esac
