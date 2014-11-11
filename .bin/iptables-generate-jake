@@ -54,6 +54,10 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 # Block youtube CDN crap
 #-4 -A OUTPUT -d 206.111.0.0/16 -j REJECT
 
+# Block t-mobile NXDOMAIN hijacking destination
+-4 -A OUTPUT -d 198.105.244.104 -j REJECT
+-4 -A OUTPUT -d 198.105.254.104 -j REJECT
+
 COMMIT
 
 *nat
