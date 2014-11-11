@@ -40,10 +40,10 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # DHCP client
--4 -A INPUT -i $EXTIF -p tcp --dport 68 -j ACCEPT
--4 -A INPUT -i $EXTIF -p udp --dport 68 -j ACCEPT
--6 -A INPUT -i $EXTIF -p tcp --dport 546 -j ACCEPT
--6 -A INPUT -i $EXTIF -p udp --dport 546 -j ACCEPT
+-4 -A INPUT -p tcp --dport 68 -j ACCEPT
+-4 -A INPUT -p udp --dport 68 -j ACCEPT
+-6 -A INPUT -p tcp --dport 546 -j ACCEPT
+-6 -A INPUT -p udp --dport 546 -j ACCEPT
 
 # SSH, MoSH
 -A INPUT -p tcp --dport 22 -j ACCEPT
