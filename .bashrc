@@ -10,10 +10,11 @@ PS1='[\u@\h \W]\$ '
 
 export EDITOR="vim"
 
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
 
 6p() { curl -s -F "content=<${1--}" -F ttl=604800 -w "%{redirect_url}\n" -o /dev/null https://p.6core.net/; }
-
-alias marchnative='gcc -march=native -E -v - </dev/null 2>&1 | grep cc1'
 
 if [ -d "$HOME/.bin" ] ; then
     export PATH="$HOME/.bin:$PATH"

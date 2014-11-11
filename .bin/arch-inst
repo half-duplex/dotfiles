@@ -18,7 +18,7 @@ GRUBTARGET="/dev/sda"
 LOCALE="en_US.UTF-8"
 TIMEZONE="UTC"
 MYUSERNAME="mal"
-PACKAGES="tmux bash-completion htop strace lsof mtr whois dnsutils vim" # os-prober
+PACKAGES="tmux bash-completion htop strace lsof mtr whois dnsutils vim nmap sshguard" # os-prober
 PACMANARGS="" # helpful for --arch i686 or similar, is passed along with packages to pacstrap
 
 if [ -z "`mount | grep -E \"$GRUBTARGET.+ on $TARGET type \"`" ] ; then
@@ -33,7 +33,7 @@ read a
 
 pacman -Sy archlinux-keyring --noconfirm # important, otherwise the rest will likely fail w/ invalid sigs
 
-PACKAGES="$PACKAGES base base-devel vim sudo grub-bios curl wget ca-certificates ntp openssh"
+PACKAGES="$PACKAGES base base-devel vim sudo grub-bios wget ntp openssh git rxvt-unicode-terminfo rsync bridge-utils net-tools dnsutils"
 #rm $TARGET/var/cache/pacman/pkg/*.tar.xz
 if [ "x$GUI" == "xy" ] ; then
     PACKAGES="$PACKAGES xorg-server xorg-xinit xorg-server-utils awesome slim slim-themes archlinux-themes-slim xterm"

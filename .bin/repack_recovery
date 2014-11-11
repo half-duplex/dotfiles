@@ -1,0 +1,103 @@
+#!/bin/bash -e
+
+# Repacks an android recovery.img with your keys instead of Google's
+# Implements method from http://mjg59.dreamwidth.org/31765.html
+# Script by mal <mal@sec.gd> who isn't responsible when this bricks the
+#   entire internet, molests your pets, or does anything else at all.
+# Released under the GNU GPL v3 or later
+
+# Usage:
+# Run from a directory with a recovery.img and optionally keys/key.x509.pem
+
+
+if [ ! -f "recovery.img" ] ; then
+    echo "Can't find recovery.img"
+    exit 2
+fi
+if [ -f "recovery.img_FILES" -o -f "recovery.custom.img" ] ; then
+    echo "Not overwriting existing recovery.custom.img"
+    exit 2
+fi
+PATH="resources/mkbootimg/:resources/:$PATH"
+if [ -z "`which unpackbootimg-static`" ] ; then
+    echo "Setting up mkbootimg"
+    mkdir -p resources
+    git clone https://github.com/osm0sis/mkbootimg.git resources/mkbootimg
+    make -C resources/mkbootimg static
+fi
+if [ -z "`which make_key`" ] ; then
+    echo "Setting up make_key"
+    mkdir -p resources
+    curl -s -o resources/make_key 'https://raw.githubusercontent.com/android/platform_development/master/tools/make_key'
+    chmod +x resources/make_key
+fi
+if [ ! -f 'resources/java/com/android/dumpkey/DumpPublicKey.class' ] ; then
+    echo "Setting up DumpPublicKey"
+    if [ -z "`which javac`" ] ; then
+        echo "Can't find javac, install jdk7-openjdk or similar"
+        exit 2
+    fi
+    mkdir -p resources/java/com/android/dumpkey
+    curl -s -o resources/java/com/android/dumpkey/DumpPublicKey.java 'https://raw.githubusercontent.com/android/platform_system_core/master/libmincrypt/tools/DumpPublicKey.java'
+    curl -s -o resources/java/bcprov.jar 'http://downloads.bouncycastle.org/java/bcprov-jdk15on-151.jar'
+    javac -cp resources/java/bcprov.jar resources/java/com/android/dumpkey/DumpPublicKey.java
+fi
+if [ ! -f 'resources/signapk' ] ; then
+    echo "Setting up SignAPK"
+    if [ -z "`which javac`" ] ; then
+        echo "Can't find javac, install jdk7-openjdk or similar"
+        exit 2
+    fi
+    mkdir -p resources/java/com/android/signapk
+    curl -s -o resources/java/com/android/signapk/SignAPK.java 'https://raw.githubusercontent.com/android/platform_build/master/tools/signapk/SignApk.java'
+    # assume bcprov was set up above
+    curl -s -o resources/java/bcpkix.jar 'http://downloads.bouncycastle.org/java/bcpkix-jdk15on-151.jar'
+    javac -cp resources/java/bcprov.jar:resources/java/bcpkix.jar resources/java/com/android/signapk/SignAPK.java
+    cat >resources/signapk <<EOF
+#!/bin/sh
+cd $PWD
+exec java -cp resources/java:resources/java/bcprov.jar:resources/java/bcpkix.jar com.android.signapk.SignApk \$@
+EOF
+    chmod +x resources/signapk
+fi
+
+if [ ! -f 'keys/key.pk8' ] ; then
+    echo "Setting up key with make_key. If you already have keys, copy the .x509.pem to keys/key.x509.pem"
+    mkdir -p keys
+    make_key keys/key '/CN=user' rsa || true # success exits nonzero
+fi
+if [ ! -f 'keys/res_keys' ] ; then
+    echo "Extracting public key"
+    java -cp resources/java:resources/java/bcprov.jar com.android.dumpkey.DumpPublicKey keys/key.x509.pem >keys/res_keys
+fi
+
+mkdir -p recovery.img_FILES/ramdisk
+unpackbootimg-static -i recovery.img -o recovery.img_FILES
+
+cd recovery.img_FILES/ramdisk
+zcat ../recovery.img-ramdisk.gz | cpio -id
+cd -
+
+cat keys/res_keys >recovery.img_FILES/ramdisk/res/keys
+
+cd recovery.img_FILES/ramdisk
+find . | cpio -o -H newc | gzip >../recovery.img-ramdisk.gz
+cd -
+
+p="recovery.img_FILES/recovery.img"
+mkbootimg-static \
+         --kernel               $p-zImage       \
+         --ramdisk              $p-ramdisk.gz   \
+         --cmdline        "`cat $p-cmdline`"    \
+         --board          "`cat $p-board`"      \
+         --base           "`cat $p-base`"       \
+         --pagesize       "`cat $p-pagesize`"   \
+         --kernel_offset  "`cat $p-kerneloff`"  \
+         --ramdisk_offset "`cat $p-ramdiskoff`" \
+         --tags_offset    "`cat $p-tagsoff`"    \
+         -o recovery.custom.img
+rm -r recovery.img_FILES
+
+echo "Done! BACK UP YOUR DATA, unlock bootloader, and try flashing recovery.custom.img"
+echo "Sign rom zip with resources/signapk -w keys/key.x509.pem keys/key.pk8 myrom.zip myrom-signed.zip"
+

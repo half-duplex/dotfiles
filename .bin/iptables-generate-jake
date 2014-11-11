@@ -36,6 +36,15 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 # Any incoming not headed for the external IP drop (actually I don't want to need $EXTIP if I don't need it )
 #-A INPUT -i $EXTIF ! -d $EXTIP -j DROP
 
+# Existing connections are fine
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# DHCP client
+-4 -A INPUT -i $EXTIF -p tcp --dport 68 -j ACCEPT
+-4 -A INPUT -i $EXTIF -p udp --dport 68 -j ACCEPT
+-6 -A INPUT -i $EXTIF -p tcp --dport 546 -j ACCEPT
+-6 -A INPUT -i $EXTIF -p udp --dport 546 -j ACCEPT
+
 # SSH, MoSH
 -A INPUT -p tcp --dport 22 -j ACCEPT
 -A INPUT -p udp --dport 60000:61000 -j ACCEPT
@@ -44,9 +53,6 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p udp --dport 27031 -j ACCEPT
 -A INPUT -p udp --dport 27036 -j ACCEPT
 -A INPUT -p tcp --dport 27036:27037 -j ACCEPT
-
-# Existing connections are fine
--A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 -A INPUT -j LOGDROP
 -A FORWARD -j LOGDROP
