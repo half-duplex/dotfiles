@@ -13,6 +13,7 @@ set nowrap
 set fo-=t
 "set colorcolumn=80
 set background=dark
+set nolist
 
 " save sudo-only files
 cmap w!! %!sudo tee > /dev/null %
