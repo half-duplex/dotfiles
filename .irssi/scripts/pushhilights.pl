@@ -1,10 +1,10 @@
 #
-# Send push notification to an android device on hilight or private message
+# Send push notification to phone/etc on hilight or private message
 # By mal <mal@sec.gd>
 # Released under GPLv3
 #
-# Uses Pushover, you must have that set up, paid for (or on trial) and a user
-# and app token. Configure the tokens using /set pushhilights
+# Uses Pushbullet, you must have that set up and your user token from
+# https://www.pushbullet.com/account . Configure it using /set pushhilights
 # Format for ignored channels/servers is comma separated no space: #ch1,#irpg
 #
 # TODO: Rate-limiting, and maybe retrying if not http 200
@@ -17,20 +17,21 @@ use LWP::UserAgent;
 use POSIX;
 use vars qw($VERSION %IRSSI); 
 
-$VERSION = "1";
+$VERSION = "2";
 %IRSSI = (
     authors     => "mal",
     contact     => "mal\@sec.gd", 
     name        => "pushhilights",
-    description => "Send push notification to android on hilight or PM",
+    description => "Send push notification to pushbullet on hilight or PM",
     license     => "GPLv3",
     url         => "http://irssi.org/",
-    changed     => "Sat Jan 10 18:00:00 UTC 2015"
+    changed     => "Sat Jan 10 20:00:00 UTC 2015"
 );
 
 sub sig_printtext {
     my ($dest, $text, $stripped) = @_;
-    my $output = $stripped;
+    my $outbody = $stripped;
+    $outbody =~ s/([\\"])/\\\1/g;
 
     my $opt = MSGLEVEL_HILIGHT;
     if(Irssi::settings_get_bool('pushhilights_privmsg')) {
@@ -46,24 +47,21 @@ sub sig_printtext {
             return();
         }
         if ($dest->{level} & MSGLEVEL_PUBLIC) {
-            $output = $dest->{server}->{tag}." ".$dest->{target}." ".$output;
+            $outtitle = $dest->{server}->{tag}." ".$dest->{target};
         } else {
-            $output = $dest->{server}->{tag}." privmsg: ".$output;
+            $outtitle = $dest->{server}->{tag}." privmsg";
         }
-        #Irssi::print("pushhilights: ".$output, MSGLEVEL_NEVER);
+        #Irssi::print("pushhilights: ".$outtitle." / ".$outbody, MSGLEVEL_NEVER);
 
         my $userAgent = LWP::UserAgent->new;
         $userAgent->env_proxy();
 
         my $response = $userAgent->post(
-            "https://api.pushover.net/1/messages.json", [
-                "token" => Irssi::settings_get_str('pushhilights_apptoken'),
-                "user" => Irssi::settings_get_str('pushhilights_userkey'),
-                "message" => $output,
-                "priority" => Irssi::settings_get_int('pushhilights_priority'),
-                "timestamp" => time(),
-                # see https://pushover.net/api
-        ]);
+            "https://api.pushbullet.com/v2/pushes",
+            authorization => "Bearer ".Irssi::settings_get_str('pushhilights_token'),
+            content_type => "application/json",
+            Content => '{"type":"note","title":"Hilight in '.$outtitle.'","body":"'.$outbody.'"}');
+            # see https://docs.pushbullet.com/v2/pushes/
 
         if (!$response->is_success) {
             Irssi::print("pushhilights: Notification not posted: " . $response->content);
@@ -71,16 +69,13 @@ sub sig_printtext {
     }
 }
 
-Irssi::settings_add_str('pushhilights','pushhilights_apptoken','changeme');
-Irssi::settings_add_str('pushhilights','pushhilights_userkey','changeme');
+Irssi::settings_add_str('pushhilights','pushhilights_token','changeme');
 Irssi::settings_add_bool('pushhilights','pushhilights_privmsg',1);
-Irssi::settings_add_int('pushhilights','pushhilights_priority',0);
 Irssi::settings_add_str('pushhilights','pushhilights_ignore_servers','');
 Irssi::settings_add_str('pushhilights','pushhilights_ignore_channels','');
 
-if((Irssi::settings_get_str('pushhilights_apptoken') eq 'changeme')
- ||(Irssi::settings_get_str('pushhilights_userkey') eq 'changeme')) {
-    Irssi::print("pushhilights: You have to configure me before use! See /set pushhilights");
+if(Irssi::settings_get_str('pushhilights_token') eq 'changeme') {
+    Irssi::print("pushhilights: You have to configure me before use! See /set pushhilights and script comments.");
 }
 
 Irssi::signal_add('print text', 'sig_printtext');
