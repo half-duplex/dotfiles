@@ -5,6 +5,7 @@
 #
 # Uses Pushover, you must have that set up, paid for (or on trial) and a user
 # and app token. Configure the tokens using /set pushhilights
+# Format for ignored channels/servers is comma separated no space: #ch1,#irpg
 #
 # TODO: Rate-limiting, and maybe retrying if not http 200
 #
@@ -16,7 +17,7 @@ use LWP::UserAgent;
 use POSIX;
 use vars qw($VERSION %IRSSI); 
 
-$VERSION = "0.2";
+$VERSION = "1";
 %IRSSI = (
     authors     => "mal",
     contact     => "mal\@sec.gd", 
@@ -24,7 +25,7 @@ $VERSION = "0.2";
     description => "Send push notification to android on hilight or PM",
     license     => "GPLv3",
     url         => "http://irssi.org/",
-    changed     => "Sat Sep 6 18:00:00 UTC 2014"
+    changed     => "Sat Jan 10 18:00:00 UTC 2015"
 );
 
 sub sig_printtext {
@@ -33,12 +34,17 @@ sub sig_printtext {
 
     my $opt = MSGLEVEL_HILIGHT;
     if(Irssi::settings_get_bool('pushhilights_privmsg')) {
-        $opt = MSGLEVEL_HILIGHT|MSGLEVEL_MSGS;
+        $opt = $opt|MSGLEVEL_MSGS;
     }
     if(
         ($dest->{level} & ($opt)) &&
         ($dest->{level} & MSGLEVEL_NOHILIGHT) == 0
     ) {
+        my @ignoreservers = split(',',Irssi::settings_get_str('pushhilights_ignore_servers'));
+        my @ignorechannels = split(',',Irssi::settings_get_str('pushhilights_ignore_channels'));
+        if(($dest->{server}->{tag} ~~ @ignoreservers)||($dest->{target} ~~ @ignorechannels)) {
+            return();
+        }
         if ($dest->{level} & MSGLEVEL_PUBLIC) {
             $output = $dest->{server}->{tag}." ".$dest->{target}." ".$output;
         } else {
@@ -54,8 +60,8 @@ sub sig_printtext {
                 "token" => Irssi::settings_get_str('pushhilights_apptoken'),
                 "user" => Irssi::settings_get_str('pushhilights_userkey'),
                 "message" => $output,
+                "priority" => Irssi::settings_get_int('pushhilights_priority'),
                 "timestamp" => time(),
-                # optional: device, title, url, url_title, priority (-2 to 1 or 2 + retry + expire), sound
                 # see https://pushover.net/api
         ]);
 
@@ -65,9 +71,12 @@ sub sig_printtext {
     }
 }
 
-Irssi::settings_add_str('pushhilights','pushhilights_apptoken', 'changeme');
-Irssi::settings_add_str('pushhilights','pushhilights_userkey', 'changeme');
-Irssi::settings_add_bool('pushhilights','pushhilights_privmsg', 1);
+Irssi::settings_add_str('pushhilights','pushhilights_apptoken','changeme');
+Irssi::settings_add_str('pushhilights','pushhilights_userkey','changeme');
+Irssi::settings_add_bool('pushhilights','pushhilights_privmsg',1);
+Irssi::settings_add_int('pushhilights','pushhilights_priority',0);
+Irssi::settings_add_str('pushhilights','pushhilights_ignore_servers','');
+Irssi::settings_add_str('pushhilights','pushhilights_ignore_channels','');
 
 if((Irssi::settings_get_str('pushhilights_apptoken') eq 'changeme')
  ||(Irssi::settings_get_str('pushhilights_userkey') eq 'changeme')) {
