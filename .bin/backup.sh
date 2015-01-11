@@ -11,7 +11,7 @@ case $@ in
         exit
         ;;
     all)
-        STUFFTOBU="luca eva nucacdf-web"
+        STUFFTOBU="luca eva tron" #nucacdf-web"
         ;;
     *)
         STUFFTOBU="$@"
@@ -20,9 +20,8 @@ esac
 
 START=$(date +%s)
 
-ARGS="-aXgoplEh --info=progress2"
-BUDIR="/media/bulk/backups"
-PARGS="--exclude-from /home/mal/.bin/backup.exclude.txt --delete"
+ARGS="-aXEhzAy --info=progress2 --delete --delete-delay --exclude-from /home/mal/.bin/backup.exclude.txt"
+BUDIR="/mnt/bulk/backups"
 SSHARGS="-i /home/mal/.ssh/id_rsa"
 
 for butarget in $STUFFTOBU ; do
@@ -30,16 +29,16 @@ for butarget in $STUFFTOBU ; do
     read junk
     case $butarget in
         luca)
-            rsync $ARGS / $BUDIR/luca $PARGS
-            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/backupinfo.txt
+            rsync $ARGS / $BUDIR/luca
+            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/luca.backupinfo.txt
             ;;
         eva)
-            rsync $ARGS -e "ssh $SSHARGS" root@eva:/ $BUDIR/eva $PARGS
-            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/backupinfo.txt
+            rsync -4 $ARGS -e "ssh $SSHARGS" root@eva.sec.gd:/ $BUDIR/eva
+            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/eva.backupinfo.txt
             ;;
-        nucacdf-web)
-            rsync $ARGS -e "ssh $SSHARGS" mal@nucacdf.org:/home/mal/ $BUDIR/nucacdf-web
-            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/backupinfo.txt
+        tron)
+            rsync -4 $ARGS -e "ssh $SSHARGS" root@tron.disruptivelabs.org:/ $BUDIR/tron
+            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/tron.backupinfo.txt
             ;;
         *)
             echo "Invalid backup target!"
@@ -51,5 +50,4 @@ FINISH=$(date +%s)
 echo " time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds"
 
 df -h $BUDIR
-
 
