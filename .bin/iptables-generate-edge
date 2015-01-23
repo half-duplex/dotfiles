@@ -63,8 +63,10 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 # Existing connections are fine
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# ICMP
+# Drop ping, allow other ICMP
+-4 -A INPUT -p icmp --icmp-type echo-request -j LOGDROP
 -4 -A INPUT -p icmp -j ACCEPT
+-6 -A INPUT -p icmpv6 --icmpv6-type echo-request -j LOGDROP
 -6 -A INPUT -p icmpv6 -j ACCEPT
 
 # DHCP client
