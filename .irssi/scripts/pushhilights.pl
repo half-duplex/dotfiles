@@ -3,9 +3,14 @@
 # By mal <mal@sec.gd>
 # Released under GPLv3
 #
-# Uses Pushbullet, you must have that set up and your user token from
-# https://www.pushbullet.com/account . Configure it using /set pushhilights
-# Format for ignored channels/servers is comma separated no space: #ch1,#irpg
+# Configuration:
+# 1. Install Pushbullet ( https://www.pushbullet.com ) wherever you want notifications
+# 2. Get your user token from https://www.pushbullet.com/account
+# 3. In irssi, run /set pushhilights_token YOURTOKENHERE
+# 4. If you want, set ignored channels/servers and privmsg on/off (default on), eg:
+#       /set pushhilights_ignore_channels #loudchannel,#idlerpg,louduser
+#       /set pushhilights_ignore_servers bitlbee,loudserver
+#       /set pushhilights_privmsg OFF
 #
 # TODO: Rate-limiting, and maybe retrying if not http 200
 #
@@ -25,12 +30,13 @@ $VERSION = "2";
     description => "Send push notification to pushbullet on hilight or PM",
     license     => "GPLv3",
     url         => "http://irssi.org/",
-    changed     => "Sat Jan 10 20:00:00 UTC 2015"
+    changed     => "Sat Jan 18 20:00:00 UTC 2015"
 );
 
 sub sig_printtext {
     my ($dest, $text, $stripped) = @_;
     my $outbody = $stripped;
+    # Escape backslashes and quotes
     $outbody =~ s/([\\"])/\\\1/g;
 
     my $opt = MSGLEVEL_HILIGHT;
@@ -60,7 +66,7 @@ sub sig_printtext {
             "https://api.pushbullet.com/v2/pushes",
             authorization => "Bearer ".Irssi::settings_get_str('pushhilights_token'),
             content_type => "application/json",
-            Content => '{"type":"note","title":"Hilight in '.$outtitle.'","body":"'.$outbody.'"}');
+            Content => '{"type":"note","title":"Hilight - '.$outtitle.'","body":"'.$outbody.'"}');
             # see https://docs.pushbullet.com/v2/pushes/
 
         if (!$response->is_success) {
