@@ -44,7 +44,7 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
-beautiful.init("/home/mal/.config/awesome/theme/theme.lua")
+beautiful.init("~/.config/awesome/theme/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -109,7 +109,7 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "firefox", "firefox" },
                                     { "thunar", "thunar" },
                                     { "spotify", "spotify" },
-                                    { "lock", "i3lock -u -i /home/mal/library/pictures/misc/win-desktop-dual.png -p win -c 000000" },
+                                    { "lock", "i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000" },
                                     { "run", function() mypromptbox[mouse.screen]:run() end }
                                   }
                         })
@@ -296,15 +296,13 @@ globalkeys = awful.util.table.join(
 
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -u -i /home/mal/library/pictures/misc/win-desktop-dual.png -p win -c 000000") end),
+    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000") end),
+    awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && i3lock -u -i ~/.templock.png -c 000000\"") end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("xfce4-screenshooter"                         ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
     awful.key({ modkey, "Control" }, "Up"    , function () awful.util.spawn("gksu 'cpupower frequency-set -g performance'") end),
     awful.key({ modkey, "Control" }, "Down"  , function () awful.util.spawn("gksu 'cpupower frequency-set -g ondemand'"   ) end),
-
-    awful.key({ "Control", "Alt" }, "Delete" , function () awful.util.spawn("gksu systemctl kexec") end),
-    awful.key({ "Control", "Alt" , "Shift" }, "Delete" , function () awful.util.spawn("systemctl reboot") end),
 
     awful.key({},         "XF86AudioMute"       , function () os.execute("volctl mute") end),
     awful.key({},         "XF86AudioLowerVolume", function () os.execute("volctl down") end),
@@ -493,7 +491,7 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 do
   local cmds =
   {
-    "/home/mal/.bin/awm-auto.sh",
+    "~/.bin/awm-auto.sh",
   }
 
   for _,i in pairs(cmds) do
