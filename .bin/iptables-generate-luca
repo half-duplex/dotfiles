@@ -120,6 +120,9 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p tcp --dport 27036:27037 -j ACCEPT
 
 # Spotify network sync
+# MDNS
+-4 -A INPUT -s 10.0.0.0/8 -d 224.0.0.251 -p udp --sport 56354 --dport 5353 -j ACCEPT
+# UDP Broadcast
 -4 -A INPUT -p tcp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 -4 -A INPUT -p udp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 
