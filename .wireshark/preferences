@@ -1,4 +1,4 @@
-# Configuration file for Wireshark 1.10.0.
+# Configuration file for Wireshark 1.10.8.
 #
 # This file is regenerated each time preferences are saved within
 # Wireshark.  Making manual changes should be safe, however.
@@ -218,16 +218,11 @@
 # (case-insensitive).
 #gui.layout_content_3: PBYTES
 
-####### Filter Expressions ########
-gui.filter_expressions.label: Phone HTTP
-gui.filter_expressions.enabled: TRUE
-gui.filter_expressions.expr: ip.addr == 10.7.0.1 && ip.addr == 10.0.0.23 && http
-
 ####### Capture ########
 
 # Default capture device
 # A string
-capture.device: wlan0
+#capture.device: 
 
 # Interface link-layer header types (Ex: en0(1),en1(143),...)
 # A string
@@ -279,7 +274,7 @@ capture.device: wlan0
 
 # Column list
 # List of columns to be displayed in the capture options dialog.
-# Possible values: INTERFACE,LINK,PMODE,SNAPLEN,MONITOR,BUFFER,FILTER
+# Possible values: INTERFACE, LINK, PMODE, SNAPLEN, MONITOR, BUFFER, FILTER
 # 
 #capture.columns: 
 #	"INTERFACE", "LINK",
@@ -316,7 +311,7 @@ capture.device: wlan0
 
 # Use the (system's) configured name resolver (usually DNS) to resolve network names. Only applies when network name resolution is enabled
 # TRUE or FALSE (case-insensitive)
-nameres.use_external_name_resolver: FALSE
+#nameres.use_external_name_resolver: TRUE
 
 # By default "hosts" files will be loaded from multiple sources. Checking this box only loads the "hosts" in the current profile.
 # TRUE or FALSE (case-insensitive)
@@ -1982,7 +1977,7 @@ nameres.use_external_name_resolver: FALSE
 
 # Whether to validate the IPv4 checksum
 # TRUE or FALSE (case-insensitive)
-#ip.check_checksum: TRUE
+#ip.check_checksum: FALSE
 
 # Whether to correct for TSO-enabled (TCP segmentation offload) hardware captures, such as spoofing the IP packet length
 # TRUE or FALSE (case-insensitive)
@@ -3728,6 +3723,10 @@ nameres.use_external_name_resolver: FALSE
 # TRUE or FALSE (case-insensitive)
 #sip.retrans_the_same_sport: TRUE
 
+# Whether SIP should delay tracking the media (e.g., RTP/RTCP) until an SDP offer is answered. If enabled, mid-dialog changes to SDP and media state only take effect if and when an SDP offer is successfully answered; however enabling this prevents tracking media in early-media call scenarios
+# TRUE or FALSE (case-insensitive)
+#sip.delay_sdp_changes: FALSE
+
 # Whether the SCCP dissector should reassemble messages spanning multiple TCP segments. To use this option, you must also enable "Allow subdissectors to reassemble TCP streams" in the TCP protocol settings.
 # TRUE or FALSE (case-insensitive)
 #skinny.desegment: TRUE
@@ -3848,7 +3847,7 @@ nameres.use_external_name_resolver: FALSE
 # Redirect SSL debug to file name; leave empty to disable debugging, or use "-" to redirect output to stderr
 # 
 # A path to a file
-ssl.debug_file: /home/mal/.wireshark-log
+#ssl.debug_file: 
 
 # Whether the SSL dissector should reassemble SSL records spanning multiple TCP segments. To use this option, you must also enable "Allow subdissectors to reassemble TCP streams" in the TCP protocol settings.
 # TRUE or FALSE (case-insensitive)
@@ -4401,3 +4400,7 @@ ssl.debug_file: /home/mal/.wireshark-log
 # Determines time between tap updates
 # A decimal number
 #statistics.update_interval: 3000
+
+# Determines maximum height of RTP Player window
+# A decimal number
+#statistics.rtp_player_max_visible: 4
