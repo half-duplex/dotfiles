@@ -11,4 +11,3 @@
 /home/*/.thumbnails/*
 /home/*/.mozilla/firefox/*.default/Cache/*
 /home/*/.cache/*
-/home/mal/.bin/usr/local/fah-gpu-chroot/*

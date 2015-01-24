@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DATAUSER="mal"
+
 if [ "`whoami`" != "root" ] ; then
     echo "Need elevation!"
     exec sudo $0 $@
@@ -11,7 +13,7 @@ case $@ in
         exit
         ;;
     all)
-        STUFFTOBU="luca eva tron" #nucacdf-web"
+        STUFFTOBU="luca eva blake pluto tron"
         ;;
     *)
         STUFFTOBU="$@"
@@ -20,30 +22,28 @@ esac
 
 START=$(date +%s)
 
-ARGS="-aXEhzAy --info=progress2 --delete --delete-delay --exclude-from /home/mal/.bin/backup.exclude.txt"
+ARGS="-aXEhzAy --info=progress2 --delete --delete-delay --exclude-from /home/$DATAUSER/.bin/data/backup.exclude.txt -v"
 BUDIR="/mnt/bulk/backups"
-SSHARGS="-i /home/mal/.ssh/id_rsa"
+SSHARGS="-i /home/$DATAUSER/.ssh/id_rsa -F /home/$DATAUSER/.ssh/config"
 
 for butarget in $STUFFTOBU ; do
     echo -n "[Enter] to start $butarget:"
     read junk
     case $butarget in
         luca)
-            rsync $ARGS / $BUDIR/luca
-            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/luca.backupinfo.txt
+            rsync $ARGS / $BUDIR/$butarget
             ;;
-        eva)
-            rsync -4 $ARGS -e "ssh $SSHARGS" root@eva.sec.gd:/ $BUDIR/eva
-            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/eva.backupinfo.txt
+        eva|blake|pluto)
+            rsync -4 $ARGS -e "ssh $SSHARGS" root@${butarget}.sec.gd:/ $BUDIR/$butarget
             ;;
         tron)
-            rsync -4 $ARGS -e "ssh $SSHARGS" root@tron.disruptivelabs.org:/ $BUDIR/tron
-            echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/tron.backupinfo.txt
+            rsync -4 $ARGS -e "ssh $SSHARGS" root@tron.disruptivelabs.org:/ $BUDIR/$butarget
             ;;
         *)
             echo "Invalid backup target!"
             ;;
     esac
+    echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/${butarget}.backupinfo.txt
 done
 
 FINISH=$(date +%s)
