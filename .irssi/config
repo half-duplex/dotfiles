@@ -1,0 +1,197 @@
+servers = (
+  {
+    address = "localhost";
+    chatnet = "bitlbee";
+    port = "6967";
+    use_ssl = "no";
+  },
+  {
+    address = "irc.lostirc.org";
+    chatnet = "LostIRC";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "no";
+  },
+  {
+    address = "cornelius.2600.net";
+    chatnet = "2600net";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "no";
+  },
+  {
+    #    address = "irc.choopa.net";
+    address = "irc.paraphysics.net";
+    chatnet = "EFnet";
+    #    port = "9999";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "no";
+  },
+  {
+    #    address = "morgan.freenode.net";
+    address = "card.freenode.net";
+    chatnet = "freenode";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "yes";
+  },
+  {
+    address = "irc.hackint.org";
+    chatnet = "hackint";
+    port = "9999";
+    use_ssl = "yes";
+    ssl_verify = "no";
+  },
+  {
+    address = "irc.ctf365.com";
+    chatnet = "CTF365";
+    port = "6667";
+    use_ssl = "no";
+  },
+  {
+    address = "irc.oftc.net";
+    chatnet = "oftc";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "no";
+  },
+  {
+    address = "hypeirc.cjdns.ca";
+    chatnet = "hypeirc";
+    port = "6667";
+    use_ssl = "no";
+  },
+  {
+    address = "irc.binrev.net";
+    chatnet = "binrev";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "no";
+  }
+);
+
+chatnets = {
+  bitlbee = { type = "IRC"; };
+  LostIRC = { type = "IRC"; };
+  2600net = { type = "IRC"; };
+  EFnet = { type = "IRC"; };
+  freenode = { type = "IRC"; };
+  hackint = { type = "IRC"; };
+  CTF365 = { type = "IRC"; };
+  oftc = { type = "IRC"; };
+  binrev = { type = "IRC"; };
+  hypeirc = { type = "IRC"; };
+};
+
+channels = (
+  { name = "&bitlbee"; chatnet = "bitlbee"; autojoin = "Yes"; }
+);
+
+aliases = {
+  BALANCE = "window balance";
+  DESCRIBE = "action";
+  DATE = "time";
+  HOST = "userhost";
+  LAST = "lastlog";
+  SAY = "msg *";
+  WW = "whowas";
+  KB = "kickban";
+  KO = "knockout";
+  SB = "scrollback";
+  WC = "window close";
+  GOTO = "sb goto";
+  CHAT = "dcc chat";
+  CALC = "exec - if command -v bc >/dev/null 2>&1\\; then printf '%s=' '$*'\\; echo '$*' | bc -l\\; else echo bc was not found\\; fi";
+  INVITELIST = "mode $C +I";
+  EXEMPTLIST = "mode $C +e";
+  ATAG = "WINDOW SERVER";
+  UNSET = "set -clear";
+  RESET = "set -default";
+  READ = "script exec \\$_->activity(0) for Irssi::windows";
+};
+
+statusbar = {
+  items = {
+    window = "$winref:$tag/$itemname{sbmode $M}/$cumode$N{sbmode $usermode}";
+    window_empty = "$winref:$winname/$tag/$cumode$N{sbmode $usermode}";
+    prompt = "$Z $winref:$tag/$[.10]itemname/$cumode$N{sbaway $A}> ";
+    prompt_empty = "$Z $winref:$winname/$tag/$cumode$N{sbmode $usermode}{sbaway $A}> ";
+    act = "{sb $0-}";
+    lag = "{sb L:$0-}";
+    more = "{sb V}";
+  };
+  default = {
+    topic = { disabled = "yes"; };
+    window = { disabled = "yes"; };
+    window_inact = {
+      disabled = "no";
+      position = "1";
+      visible = "inactive";
+      items = {
+        window = { };
+        window_empty = { };
+        more = { priority = "-1"; alignment = "right"; };
+      };
+    };
+    prompt = {
+      items = {
+        prompt = { priority = "-1"; };
+        prompt_empty = { priority = "-1"; };
+        input = { priority = "10"; };
+        more = { priority = "-1"; alignment = "right"; };
+        lag = { priority = "-1"; alignment = "right"; };
+        act = { priority = "10"; alignment = "right"; };
+      };
+    };
+  };
+};
+
+settings = {
+  core = {
+    timestamp_format = "%H%M%S";
+    real_name = "Trevor Bergeron";
+    user_name = "mal";
+    nick = "mal";
+  };
+  "fe-text" = {
+    actlist_sort = "refnum";
+    scrollback_time = "1day 12hour";
+    scrollback_lines = "500";
+  };
+  "fe-common/core" = {
+    term_charset = "utf-8";
+    beep_when_window_active = "yes";
+    beep_when_away = "yes";
+    beep_msg_level = "MSGS NOTICES DCC DCCMSGS HILIGHT";
+    bell_beeps = "yes";
+    activity_hide_targets = "";
+    activity_hide_level = "QUITS JOINS PARTS KICKS NICKS MODES";
+    autolog = "no";
+    autolog_path = "~/.irssi/logs/$tag/$0.log";
+  };
+  "perl/core/scripts" = {
+    splitlong_max_length = "320";
+    auto_regain_ops = "yes";
+    tmux_away_active = "yes";
+    tmux_away_repeat = "5";
+    tmux_away_message = "disconnected from tmux";
+    pushhilights_ignore_channels = "";
+    pushhilights_ignore_servers = "bitlbee";
+    pushhilights_token = "";
+  };
+  "irc/core" = {
+    ctcp_version_reply = "";
+    ctcp_userinfo_reply = "";
+    cmds_max_at_once = "2147483647";
+    cmd_queue_speed = "0msec";
+  };
+  "irc/flood" = { flood_timecheck = "8"; flood_max_msgs = "2147483647"; };
+};
+logs = { };
+notifies = { };
+hilights = ( );
+ignores = ( );
+windows = {
+  1 = { immortal = "yes"; name = "(status)"; level = "ALL"; };
+};
