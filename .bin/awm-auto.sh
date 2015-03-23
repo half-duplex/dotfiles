@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PATH="$PATH:/usr/bin"
+
 if pgrep redshift >/dev/null ; then
     echo -n
 else
