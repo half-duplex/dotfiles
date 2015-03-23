@@ -81,7 +81,7 @@ local layouts =
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+    tags[s] = awful.tag({ 1, 2, 3, 4, 5 }, s, layouts[1])
 end
 -- }}}
 
@@ -109,7 +109,7 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "firefox", "firefox" },
                                     { "thunar", "thunar" },
                                     { "spotify", "spotify" },
-                                    { "lock", "i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000" },
+                                    { "lock", "bash -c \"exec i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000\"" },
                                     { "run", function() mypromptbox[mouse.screen]:run() end }
                                   }
                         })
@@ -296,8 +296,8 @@ globalkeys = awful.util.table.join(
 
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000") end),
-    awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && i3lock -u -i ~/.templock.png -c 000000\"") end),
+    awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000\"") end),
+    awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"exec scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000\"") end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("xfce4-screenshooter"                         ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
@@ -402,15 +402,18 @@ awful.rules.rules = {
                      focus = awful.client.focus.filter,
                      keys = clientkeys,
                      buttons = clientbuttons } },
+    -- See http://awesome.naquadah.org/wiki/Understanding_Rules#Window_Properties
     { rule = { class = "pinentry" },
       properties = { floating = true } },
-    { rule = { class = "gimp" },
+    { rule = { class = "Gimp" },
       properties = { floating = true } },
     { rule = { class = "Pidgin" },
       properties = { floating = true } },
     { rule = { class = "InputOutput" }, -- qemu frontend
       properties = { floating = true } },
     { rule = { instance = "plugin-container" },
+      properties = { floating = true } },
+    { rule = { class = "Lighttasks" },
       properties = { floating = true } },
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
