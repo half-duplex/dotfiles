@@ -2,7 +2,7 @@
 "execute pathogen#infect()
 
 syntax on
-set cindent
+set autoindent
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
@@ -11,7 +11,8 @@ set number
 set tw=79
 set nowrap
 set fo-=t
-"set colorcolumn=80
+set colorcolumn=120
+highlight ColorColumn ctermbg=0
 set background=dark
 set nolist
 
