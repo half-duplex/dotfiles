@@ -1,5 +1,11 @@
-"runtime bundle/vim-pathogen/autoload/pathogen.vim
-"execute pathogen#infect()
+runtime bundle/vim-pathogen/autoload/pathogen.vim
+execute pathogen#infect()
+execute pathogen#helptags()
+
+filetype plugin indent on
+let g:pymode_options_max_line_length = 119
+let g:pymode_folding = 0
+let g:pymode_rope = 0
 
 syntax on
 set autoindent
@@ -15,6 +21,13 @@ set colorcolumn=120
 highlight ColorColumn ctermbg=0
 set background=dark
 set nolist
+set foldmethod=marker
+set incsearch
+set ignorecase
+set smartcase
+
+nmap <C-n> :bnext<CR>
+nmap <C-p> :bprev<CR>
 
 " save sudo-only files
 cmap w!! %!sudo tee > /dev/null %
@@ -37,18 +50,11 @@ set scrolloff=8 " Number of lines from vertical edge to start scrolling
 set sidescrolloff=15 " Number of cols from horizontal edge to start scrolling
 set sidescroll=1 " Number of cols to scroll at a time
 
-" move the cursor in insert mode
-"imap <C-h> <C-o>h
-"imap <C-j> <C-o>j
-"imap <C-k> <C-o>k
-"imap <C-l> <C-o>l
-
 let mapleader = ","
 
 " easier to reach Esc
 inoremap ii <Esc>
-
-nnoremap U <C-r>
+inoremap <C-c> <Esc>
 
 " I can type :help on my own, thanks.
 noremap <F1> <Esc>
@@ -108,24 +114,3 @@ autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
-" Better navigating through omnicomplete option list
-" See http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
-"set completeopt=longest,menuone
-"function! OmniPopup(action)
-"    if pumvisible()
-"        if a:action == 'j'
-"            return "\<C-N>"
-"        elseif a:action == 'k'
-"            return "\<C-P>"
-"        endif
-"    endif
-"    return a:action
-"endfunction
-"inoremap <silent><C-j> <C-R>=OmniPopup('j')<CR>
-"inoremap <silent><C-k> <C-R>=OmniPopup('k')<CR>
-
-
-" Python folding
-" mkdir -p ~/.vim/ftplugin
-" wget -O ~/.vim/ftplugin/python_editing.vim http://www.vim.org/scripts/download_script.php?src_id=5492
-"set nofoldenable
