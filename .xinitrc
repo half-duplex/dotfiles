@@ -1,8 +1,4 @@
 #!/bin/sh
-#
-# ~/.xinitrc
-#
-# Executed by startx (run your window manager from here)
 
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
   for f in /etc/X11/xinit/xinitrc.d/*; do
@@ -22,27 +18,16 @@ if [ -d "$HOME/.bin" ] ; then
     export PATH="$HOME/.bin:$PATH"
 fi
 
-DM=$1
-if [ -z "$DM" ] ; then
-    DM="awm"
+nitrogen --restore &
+
+if ! pgrep redshift >/dev/null ; then
+    redshift-my &
 fi
 
-case $DM in
-awm|awesome)
-    shift
-    exec awesome $@
-    ;;
-i3|i3wm)
-    shift
-    exec i3 $@
-    ;;
-xfce|xfce4)
-    shift
-    exec startxfce4 $@
-    ;;
-*)
-    echo ".xinitrc: Unrecognized session type, exec anyway"
-    exec $@
-    ;;
-esac
+if ! pgrep x11vnc >/dev/null ; then
+    x11vnc -bg & # fork immediately, otherwise awm startup delay
+fi
+
+shift
+exec awesome $@
 

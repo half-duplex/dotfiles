@@ -492,11 +492,7 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 
 -- autoruns
 do
-  local cmds =
-  {
-    "~/.bin/awm-auto.sh",
-  }
-
+  local cmds = {}
   for _,i in pairs(cmds) do
     awful.util.spawn(i)
   end
