@@ -297,7 +297,7 @@ globalkeys = awful.util.table.join(
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
     awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000\"") end),
-    awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"exec scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000\"") end),
+    awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000\"") end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("xfce4-screenshooter"                         ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
