@@ -1,5 +1,6 @@
 #!/bin/bash
 
+DISPLAY=":0"
 PATH="$PATH:/usr/bin"
 
 if pgrep redshift >/dev/null ; then
