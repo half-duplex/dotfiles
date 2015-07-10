@@ -11,3 +11,5 @@
 /home/*/.thumbnails/*
 /home/*/.mozilla/firefox/*.default/Cache/*
 /home/*/.cache/*
+/home/*/.local/share/Steam/SteamApps/common/*
+/home/*/.gameservers/*
