@@ -1,6 +1,11 @@
 #!/bin/bash
 
+# Use this user's .ssh/config etc
 DATAUSER="mal"
+KEEPDAYS=7
+KEEPWEEKS=26 # 26=6mos
+BUDIR="/mnt/bulk/backups"
+ARGS="-aXEhAy --info=progress2 --delete --delete-delay --exclude-from /home/$DATAUSER/.bin/data/backup.exclude.txt"
 
 if [ "`whoami`" != "root" ] ; then
     echo "Need elevation!"
@@ -13,7 +18,7 @@ case $@ in
         exit
         ;;
     all)
-        STUFFTOBU="luca eva blake pluto tron"
+        STUFFTOBU="luca nova eva blake pluto tron"
         ;;
     *)
         STUFFTOBU="$@"
@@ -21,29 +26,38 @@ case $@ in
 esac
 
 START=$(date +%s)
-
-ARGS="-aXEhzAy --info=progress2 --delete --delete-delay --exclude-from /home/$DATAUSER/.bin/data/backup.exclude.txt -v"
-BUDIR="/mnt/bulk/backups"
 SSHARGS="-i /home/$DATAUSER/.ssh/id_rsa -F /home/$DATAUSER/.ssh/config"
 
 for butarget in $STUFFTOBU ; do
     echo -n "[Enter] to start $butarget:"
     read junk
+    now="`date '+%Y%m%d.%H%M%S.%a'`"
+    last="`ls ${BUDIR}/$butarget | sort | tail -n 1`"
+    hl="--link-dest=${BUDIR}/$butarget/$last"
     case $butarget in
         luca)
-            rsync $ARGS / $BUDIR/$butarget
+            rsync $ARGS / $BUDIR/$butarget/$now/ $hl
             ;;
-        eva|blake|pluto)
-            rsync -4 $ARGS -e "ssh $SSHARGS" root@${butarget}.sec.gd:/ $BUDIR/$butarget
+        nova|eva|blake|pluto)
+            rsync -4 $ARGS -z -e "ssh $SSHARGS" root@${butarget}.sec.gd:/ $BUDIR/$butarget/$now/ $hl
             ;;
         tron)
-            rsync -4 $ARGS -e "ssh $SSHARGS" root@tron.disruptivelabs.org:/ $BUDIR/$butarget
+            rsync -4 $ARGS -z -e "ssh $SSHARGS" root@tron.disruptivelabs.org:/ $BUDIR/$butarget/$now/ $hl
             ;;
         *)
             echo "Invalid backup target!"
             ;;
     esac
-    echo "Backup from $(date '+%A, %d %B %Y, %T')" >$BUDIR/${butarget}.backupinfo.txt
+    # Delete all but the most recent $KEEPDAYS. Ignore weeklies.
+    for backup in `ls "${BUDIR}/$butarget" | sort | head -n -${KEEPDAYS} | grep -vE '\.Mon$'` ; do
+            echo "Removing old daily: ${backup}"
+            echo rm -rf "${BUDIR}/$butarget/${backup}"
+    done
+    # Delete old weeklies - only works if run every     Mon
+    for backup in `ls "${BUDIR}/$butarget" | grep -E '\.Mon$' | sort | head -n -${KEEPWEEKS}` ; do
+            echo "Removing old weekly: ${backup}"
+            echo rm -rf "${BUDIR}/$butarget/${backup}"
+    done
 done
 
 FINISH=$(date +%s)
