@@ -109,7 +109,7 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "firefox", "firefox" },
                                     { "thunar", "thunar" },
                                     { "spotify", "spotify" },
-                                    { "lock", "bash -c \"exec i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000 -n\"" },
+                                    { "lock", "bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"" },
                                     { "run", function() mypromptbox[mouse.screen]:run() end }
                                   }
                         })
@@ -296,7 +296,7 @@ globalkeys = awful.util.table.join(
 
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/misc/win-desktop-dual.png -p win -c 000000 -n\"") end),
+    awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"") end),
     awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000 -n\"") end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("imgur-screenshot"                            ) end),
