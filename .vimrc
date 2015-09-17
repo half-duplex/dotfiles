@@ -1,9 +1,6 @@
-let s:pg = "bundle/vim-pathogen/autoload/pathogen.vim"
-if filereadable(s:pg)
-    runtime s:pg
-    execute pathogen#infect()
-    execute pathogen#helptags()
-endif
+runtime bundle/vim-pathogen/autoload/pathogen.vim
+silent! execute pathogen#infect()
+silent! execute pathogen#helptags()
 
 filetype plugin indent on
 let g:pymode_options_max_line_length = 119
