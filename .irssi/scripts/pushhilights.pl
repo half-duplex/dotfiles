@@ -8,8 +8,9 @@
 # 2. Get your user token from https://www.pushbullet.com/account
 # 3. In irssi, run /set pushhilights_token YOURTOKENHERE
 # 4. If you want, set ignored channels/servers and privmsg on/off (default on), eg:
-#       /set pushhilights_ignore_channels #loudchannel,#idlerpg,louduser
+#       /set pushhilights_ignore_nicks flagbot,louduser
 #       /set pushhilights_ignore_servers bitlbee,loudserver
+#       /set pushhilights_ignore_channels #loudchannel,#idlerpg,constant_pm_dude
 #       /set pushhilights_privmsg OFF
 #
 # TODO: Rate-limiting, and maybe retrying if not http 200
@@ -22,7 +23,7 @@ use LWP::UserAgent;
 use POSIX;
 use vars qw($VERSION %IRSSI); 
 
-$VERSION = "2";
+$VERSION = "2.1";
 %IRSSI = (
     authors     => "mal",
     contact     => "mal\@sec.gd", 
@@ -30,7 +31,7 @@ $VERSION = "2";
     description => "Send push notification to pushbullet on hilight or PM",
     license     => "GPLv3",
     url         => "http://irssi.org/",
-    changed     => "Sat Jan 18 20:00:00 UTC 2015"
+    changed     => "Sat Sep 18 20:00:00 UTC 2015"
 );
 
 sub sig_printtext {
@@ -38,6 +39,7 @@ sub sig_printtext {
     my $outbody = $stripped;
     # Escape backslashes and quotes
     $outbody =~ s/([\\"])/\\\1/g;
+    # FIXME: Escape or strip special chars (mirc formatting, etc) - currently causes post failure
 
     my $opt = MSGLEVEL_HILIGHT;
     if(Irssi::settings_get_bool('pushhilights_privmsg')) {
@@ -47,10 +49,16 @@ sub sig_printtext {
         ($dest->{level} & ($opt)) &&
         ($dest->{level} & MSGLEVEL_NOHILIGHT) == 0
     ) {
+        my @ignorenicks = split(',',Irssi::settings_get_str('pushhilights_ignore_nicks'));
         my @ignoreservers = split(',',Irssi::settings_get_str('pushhilights_ignore_servers'));
         my @ignorechannels = split(',',Irssi::settings_get_str('pushhilights_ignore_channels'));
         if(($dest->{server}->{tag} ~~ @ignoreservers)||($dest->{target} ~~ @ignorechannels)) {
             return();
+        }
+        foreach my $ignored_nick (@ignorenicks) {
+            if ($outbody =~ /^<$ignored_nick> /) {
+                return();
+            }
         }
         if ($dest->{level} & MSGLEVEL_PUBLIC) {
             $outtitle = $dest->{server}->{tag}." ".$dest->{target};
@@ -70,18 +78,22 @@ sub sig_printtext {
             # see https://docs.pushbullet.com/v2/pushes/
 
         if (!$response->is_success) {
-            Irssi::print("pushhilights: Notification not posted: " . $response->content);
+            Irssi::print("pushhilights: Notification not posted");
+            Irssi::print("pushhilights: Title: ".$outtitle);
+            Irssi::print("pushhilights: Body: ".$outbody);
+            Irssi::print("pushhilights: Response: ".$response->content);
         }
     }
 }
 
 Irssi::settings_add_str('pushhilights','pushhilights_token','changeme');
 Irssi::settings_add_bool('pushhilights','pushhilights_privmsg',1);
+Irssi::settings_add_str('pushhilights','pushhilights_ignore_nicks','');
 Irssi::settings_add_str('pushhilights','pushhilights_ignore_servers','');
 Irssi::settings_add_str('pushhilights','pushhilights_ignore_channels','');
 
 if(Irssi::settings_get_str('pushhilights_token') eq 'changeme') {
-    Irssi::print("pushhilights: You have to configure me before use! See /set pushhilights and script comments.");
+    Irssi::print("pushhilights: You have to configure me before use! See '/set pushhilights' and script comments.");
 }
 
 Irssi::signal_add('print text', 'sig_printtext');
