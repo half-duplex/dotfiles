@@ -298,11 +298,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
     awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"") end),
     awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000 -n\"") end),
-    awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/Desktop/ 2>/dev/null'"     ) end),
+    awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/desktop/ 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("imgur-screenshot"                            ) end),
     awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
-    awful.key({ modkey, "Control" }, "Up"    , function () awful.util.spawn("gksu 'cpupower frequency-set -g performance'") end),
-    awful.key({ modkey, "Control" }, "Down"  , function () awful.util.spawn("gksu 'cpupower frequency-set -g ondemand'"   ) end),
 
     awful.key({},         "XF86AudioMute"       , function () os.execute("volctl mute") end),
     awful.key({},         "XF86AudioLowerVolume", function () os.execute("volctl down") end),
@@ -317,8 +315,10 @@ globalkeys = awful.util.table.join(
     awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey.sh next") end),
     awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end),
     awful.key({ modkey, "Shift" }, "a",         function () os.execute("setxkbmap dvorak") end),
-    awful.key({ modkey, "Shift" }, "m",         function () os.execute("setxkbmap us") end)
-
+    awful.key({ modkey, "Shift" }, "m",         function () os.execute("setxkbmap us") end),
+    -- Open window list
+    awful.key({ modkey,         }, "w",         function ()
+        awful.menu.clients({ width= 350 }, { keygrabber=true }) end)
 )
 
 clientkeys = awful.util.table.join(
@@ -339,10 +339,16 @@ clientkeys = awful.util.table.join(
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
         end),
-   awful.key({ modkey, "Shift" }, "Down",  function () awful.client.moveresize(  0,  20,   0,   0) end),
-   awful.key({ modkey, "Shift" }, "Up",    function () awful.client.moveresize(  0, -20,   0,   0) end),
-   awful.key({ modkey, "Shift" }, "Left",  function () awful.client.moveresize(-20,   0,   0,   0) end),
-   awful.key({ modkey, "Shift" }, "Right", function () awful.client.moveresize( 20,   0,   0,   0) end)
+    -- Move windows
+    awful.key({ modkey, "Shift"   }, "Up",    function () awful.client.moveresize(  0, -20,   0,   0) end),
+    awful.key({ modkey, "Shift"   }, "Down",  function () awful.client.moveresize(  0,  20,   0,   0) end),
+    awful.key({ modkey, "Shift"   }, "Left",  function () awful.client.moveresize(-20,   0,   0,   0) end),
+    awful.key({ modkey, "Shift"   }, "Right", function () awful.client.moveresize( 20,   0,   0,   0) end),
+    -- Resize windows
+    awful.key({ modkey, "Control" }, "Up",    function () awful.client.moveresize(  0,   0,   0, -20) end),
+    awful.key({ modkey, "Control" }, "Down",  function () awful.client.moveresize(  0,   0,   0,  20) end),
+    awful.key({ modkey, "Control" }, "Left",  function () awful.client.moveresize(  0,   0, -20,   0) end),
+    awful.key({ modkey, "Control" }, "Right", function () awful.client.moveresize(  0,   0,  20,   0) end)
 )
 
 -- Compute the maximum number of digit we need, limited to 9
@@ -403,6 +409,7 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons } },
     -- See http://awesome.naquadah.org/wiki/Understanding_Rules#Window_Properties
+    -- tl;dr: xprop, class== SECOND WM_CLASS entry
     { rule = { class = "pinentry" },
       properties = { floating = true } },
     { rule = { class = "Gimp" },
