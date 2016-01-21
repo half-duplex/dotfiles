@@ -4,6 +4,10 @@ java="java"
 jopts="-Xmx2G -Xincgc"
 
 case $1 in
+    t|tech|technic)
+        cd ~/.bin/data/
+        exec $java -jar TechnicLauncher.jar
+        ;;
     ftb|feedthebeast)
         cd ~/.bin/data/
         exec $java -jar FTB_Launcher.jar
