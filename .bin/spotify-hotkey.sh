@@ -1,22 +1,20 @@
 #!/bin/sh
 
-DISPLAY=:0.0
-export DISPLAY
+x="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player"
 
 case $1 in
    "play")
-       key="XF86AudioPlay"
+       ${x}.PlayPause
        ;;
    "next")
-       key="XF86AudioNext"
+       ${x}.Next
        ;;
    "prev")
-       key="XF86AudioPrev"
+       ${x}.Previous
        ;;
    *)
        echo "Usage: $0 play|next|prev"
        exit 1
         ;;
 esac
-xdotool key --window $(xdotool search --name "Spotify Premium - Linux Preview"|head -n1) $key
 exit 0
