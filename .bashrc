@@ -19,4 +19,11 @@ fi
 if [ -d "$HOME/.bin" ] ; then
     export PATH="$HOME/.bin:$PATH"
 fi
+if [ -d "$HOME/sources/android/sdk/platform-tools" ] ; then
+    export PATH="$PATH:$HOME/sources/android/sdk/platform-tools"
+fi
+
+eval $(dircolors ~/.dircolors)
+
+[ -x "$HOME/.bashrc.local" ] && . $HOME/.bashrc.local
 
