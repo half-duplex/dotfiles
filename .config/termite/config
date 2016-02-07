@@ -1,0 +1,41 @@
+[options]
+#font = 6x13 8
+#font = Monospace 8
+#font = Piraka Theory GF 12
+font = Reconstructed Matoran alphabet 12
+cursor_blink = off
+browser = firefox
+
+[colors]
+background = #252525
+foreground = #90b3b3
+
+# x;3y;4z x=style y=fg (colory) z=bg (colorz+8)
+# Black + DarkGrey
+color0  = #5b5b5b
+color8  = #737373
+# DarkRed + Red
+color1  = #9c748f
+color9  = #c392b3
+# DarkGreen + Green
+color2  = #615375
+color10 = #7a6994
+# DarkYellow + Yellow
+color3  = #5d78ab
+color11 = #7496d6
+# DarkBlue + Blue
+color4  = #31548f
+color12 = #3d69b3
+# DarkMangenta + Mangenta
+color5  = #6264e3
+color13 = #6e70ff
+# DarkCyan + Cyan
+color6  = #1f91cc
+color14 = #27b5ff
+# LightGrey + White
+color7  = #90b3b3
+color15 = #b3dede
+
+[hints]
+
+
