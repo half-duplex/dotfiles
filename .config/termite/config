@@ -1,8 +1,9 @@
 [options]
 #font = 6x13 8
-#font = Monospace 8
+font = Monospace 8
 #font = Piraka Theory GF 12
-font = Reconstructed Matoran alphabet 12
+#font = Reconstructed Matoran alphabet 12
+#font = Source Code Pro Medium 9
 cursor_blink = off
 browser = firefox
 
