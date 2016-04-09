@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 # Repacks an android recovery.img with your keys instead of Google's
 # Implements method from http://mjg59.dreamwidth.org/31765.html
@@ -38,18 +38,21 @@ if [ ! -f 'resources/java/com/android/dumpkey/DumpPublicKey.class' ] ; then
         exit 2
     fi
     mkdir -p resources/java/com/android/dumpkey
-    curl -s -o resources/java/com/android/dumpkey/DumpPublicKey.java 'https://raw.githubusercontent.com/android/platform_system_core/master/libmincrypt/tools/DumpPublicKey.java'
+    curl -s 'https://android.googlesource.com/platform/bootable/recovery.git/+/master/tools/dumpkey/DumpPublicKey.java?format=TEXT' | base64 -d >resources/java/com/android/dumpkey/DumpPublicKey.java
     curl -s -o resources/java/bcprov.jar 'http://downloads.bouncycastle.org/java/bcprov-jdk15on-151.jar'
     javac -cp resources/java/bcprov.jar resources/java/com/android/dumpkey/DumpPublicKey.java
 fi
-if [ ! -f 'resources/signapk' ] ; then
+if [ ! -f 'resources/signapk' -a ! -x "`which signapk`"] ; then
+    echo "SignAPK setup is broken"
     echo "Setting up SignAPK"
     if [ -z "`which javac`" ] ; then
         echo "Can't find javac, install jdk7-openjdk or similar"
         exit 2
     fi
     mkdir -p resources/java/com/android/signapk
-    curl -s -o resources/java/com/android/signapk/SignAPK.java 'https://raw.githubusercontent.com/android/platform_build/master/tools/signapk/SignApk.java'
+    for x in ApkSignerV2.java SignApk.java ; do
+        curl -s -o "resources/java/com/android/signapk/$x" "https://raw.githubusercontent.com/android/platform_build/master/tools/signapk/src/com/android/signapk/$x"
+    done
     # assume bcprov was set up above
     curl -s -o resources/java/bcpkix.jar 'http://downloads.bouncycastle.org/java/bcpkix-jdk15on-151.jar'
     javac -cp resources/java/bcprov.jar:resources/java/bcpkix.jar resources/java/com/android/signapk/SignAPK.java
