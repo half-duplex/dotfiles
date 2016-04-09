@@ -126,6 +126,13 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -4 -A INPUT -p tcp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 -4 -A INPUT -p udp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 
+# plex
+-A INPUT -p tcp --dport 32401 -j ACCEPT
+-A INPUT -p udp --dport 32410:32414 -j ACCEPT
+# dlna
+-A INPUT -p udp --dport 1900 -j ACCEPT
+-A INPUT -p tcp --dport 32469 -j ACCEPT
+
 # mosh
 -A INPUT -p udp --dport 60000:61000 -j ACCEPT
 
