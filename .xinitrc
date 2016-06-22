@@ -28,6 +28,5 @@ if ! pgrep x11vnc >/dev/null ; then
     x11vnc -bg & # fork immediately, otherwise awm startup delay
 fi
 
-shift
-exec awesome $@
-
+[ -n "$@" ] && exec $@
+exec awesome
