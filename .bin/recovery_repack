@@ -10,13 +10,18 @@
 # Run from a directory with a recovery.img and optionally keys/key.x509.pem
 
 
+# Running as non-root produces unusable initrd images
+if [ "`whoami`" != "root" ] ; then
+    echo "Run me as root!"
+    exit 2
+fi
 if [ ! -f "recovery.img" ] ; then
     echo "Can't find recovery.img"
-    exit 2
+    exit 3
 fi
 if [ -f "recovery.img_FILES" -o -f "recovery.custom.img" ] ; then
     echo "Not overwriting existing recovery.custom.img"
-    exit 2
+    exit 4
 fi
 PATH="resources/mkbootimg/:resources/:$PATH"
 if [ -z "`which unpackbootimg-static`" ] ; then
@@ -35,7 +40,7 @@ if [ ! -f 'resources/java/com/android/dumpkey/DumpPublicKey.class' ] ; then
     echo "Setting up DumpPublicKey"
     if [ -z "`which javac`" ] ; then
         echo "Can't find javac, install jdk7-openjdk or similar"
-        exit 2
+        exit 5
     fi
     mkdir -p resources/java/com/android/dumpkey
     curl -s 'https://android.googlesource.com/platform/bootable/recovery.git/+/master/tools/dumpkey/DumpPublicKey.java?format=TEXT' | base64 -d >resources/java/com/android/dumpkey/DumpPublicKey.java
@@ -47,7 +52,7 @@ if [ ! -f 'resources/signapk' -a ! -x "`which signapk`"] ; then
     echo "Setting up SignAPK"
     if [ -z "`which javac`" ] ; then
         echo "Can't find javac, install jdk7-openjdk or similar"
-        exit 2
+        exit 6
     fi
     mkdir -p resources/java/com/android/signapk
     for x in ApkSignerV2.java SignApk.java ; do
@@ -81,6 +86,16 @@ cd recovery.img_FILES/ramdisk
 zcat ../recovery.img-ramdisk.gz | cpio -id
 cd -
 
+# Murder verity
+if [ -e "recovery.img_FILES/ramdisk/verity_key" ] ; then
+    echo "Murdering verity"
+    name="`grep -E '^ro.product.device' recovery.img_FILES/ramdisk/default.prop | cut -d= -f2`"
+    rm recovery.img_FILES/ramdisk/verity_key
+    sed -re 's/,?verify[^, ]*//;s/forceencrypt/encryptable/g' "recovery.img_FILES/ramdisk/fstab.$name" -i
+    sed -re 's/,?verify[^, ]*//;s/forceencrypt/encryptable/g' "recovery.img_FILES/ramdisk/etc/recovery.fstab" -i
+fi
+
+# Install our keys
 cat keys/res_keys >recovery.img_FILES/ramdisk/res/keys
 
 cd recovery.img_FILES/ramdisk
