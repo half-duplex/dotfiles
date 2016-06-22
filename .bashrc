@@ -8,7 +8,9 @@
 alias ls='ls --color=auto'
 PS1='[\u@\h \W]\$ '
 
+HISTFILESIZE=2500
 export EDITOR="vim"
+export VISUAL="$EDITOR"
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
