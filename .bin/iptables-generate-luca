@@ -95,8 +95,8 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -A INPUT -p udp --dport 4575 -j ACCEPT
 -A INPUT -p udp --dport 4579 -j ACCEPT
 
-# darkhttpd
--4 -A INPUT -p tcp --dport 8080 -s 10.0.0.0/8 -j ACCEPT
+# nc
+-4 -A INPUT -p tcp --dport 1234 -s 10.0.0.0/8 -j ACCEPT
 
 # payday 2
 -A INPUT -p tcp --dport 9989 -j ACCEPT
@@ -127,7 +127,7 @@ cat >/etc/iptables/iptables.rules.new  <<EOF
 -4 -A INPUT -p udp --dport 57621 -s 10.0.0.0/8 -j ACCEPT
 
 # plex
--A INPUT -p tcp --dport 32401 -j ACCEPT
+-A INPUT -p tcp --dport 32400 -j ACCEPT
 -A INPUT -p udp --dport 32410:32414 -j ACCEPT
 # dlna
 -A INPUT -p udp --dport 1900 -j ACCEPT
