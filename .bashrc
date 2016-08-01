@@ -16,7 +16,8 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-6p() { curl -s -F "content=<${1--}" -F ttl=604800 -w "%{redirect_url}\n" -o /dev/null https://p.6core.net/; }
+[ -n "`which ix 2>/dev/null`" ] || alias ix="curl -F 'f:1=<-' ix.io"
+password(){ len=${1:-16};ct=${2:-1};tr -cd "[:alnum:]"</dev/urandom|fold -w"$len"|head -n"$ct";}
 
 if [ -d "$HOME/.bin" ] ; then
     export PATH="$HOME/.bin:$PATH"

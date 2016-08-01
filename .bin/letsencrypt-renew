@@ -1,0 +1,61 @@
+#!/bin/bash
+
+failmail="mal@sec.gd"
+
+PATH="/usr/bin"
+
+tf="`mktemp`"
+certbot renew &>"$tf"
+
+#grep -A 999999 'following certs were successfully renewed' "$tf" | grep -B 999999 ''
+grep -A 999999 'following certs could not be renewed' "$tf" | grep -B 999999 ''
+
+nd="`sed $tf -nre '/not due for renewal/,/^$|No renewals were attempted/{/No renewals|renew failure|not due for renewal/!p};' | cut -d/ -f5 | xargs`"
+fr="`sed $tf -nre '/could not be renewed/,/^$|No renewals were attempted/{/No renewals|renew failure|could not be renewed/!p};' | cut -d/ -f5 | xargs`"
+ok="`sed $tf -nre '/have been renewed/,/^$|No renewals were attempted/{/No renewals|renew failure|have been renewed/!p};' | cut -d/ -f5 | xargs`"
+
+echo -e '\n\n' >>"$tf"
+
+toreload=""
+for cert in $ok ; do
+    case $cert in
+        irc.sec.gd)
+            cp /etc/letsencrypt/live/irc.sec.gd/{fullchain,privkey}.pem /etc/inspircd/ssl/
+            chown mal:mal /etc/inspircd/ssl/*  # ugh. fix.
+            torestart="$torestart ircd"
+            echo "Configured IRC for $cert" >>"$tf"
+            ;;
+        bouncer.sec.gd)
+            zncpem=/var/lib/znc/.znc/znc.pem
+            cat /etc/letsencrypt/live/bouncer.sec.gd/{privkey,fullchain}.pem >$zncpem
+            chown znc:znc $zncpem
+            toreload="$toreload znc"
+            echo "Configured ZNC for $cert" >>"$tf"
+            ;;
+        mumble.sec.gd)
+            torestart="$torestart murmur"
+            echo "Configured murmur for $cert" >>"$tf"
+            ;;
+        smtp.sec.gd)
+            toreload="$toreload postfix dovecot"
+            echo "Configured mail for $cert" >>"$tf"
+            ;;
+        *)
+            toreload="$toreload nginx"
+            echo "Configured nginx for $cert" >>"$tf"
+            ;;
+    esac
+done
+
+echo "ok=$ok"
+echo "fr=$fr"
+echo "nd=$nd"
+
+echo "Reloading$toreload" >>"$tf"
+[ -n "$toreload" ] && systemctl reload $toreload
+echo "Restarting$torestart" >>"$tf"
+[ -n "$torestart" ] && systemctl restart $torestart
+
+mail -s "LetsEncrypt Renewal Report" -r "eva.sec.gd <root@sec.gd>" $failmail <"$tf"
+
+rm $tf
