@@ -25,3 +25,4 @@ sub dispatch {
 }
 
 Irssi::signal_add ('message public', \&dispatch);
+Irssi::signal_add ('ctcp action', \&dispatch);
