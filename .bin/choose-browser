@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# always available
+#browsers="firefox chromium google-chrome-stable torbrowser"
+browsers="firefox"
+
+if pgrep -xu "$USER" "chromium" ; then
+    echo "chromium available"
+    browsers="$browsers chromium"
+fi
+
+if pgrep -xu "$USER" "chrome" ; then
+    echo "chrome available"
+    browsers="$browsers google-chrome-stable"
+fi
+
+if pgrep -u "$USER" -f "firefox .*--class Tor Browser.*" ; then
+    echo "torbrowser available"
+    browsers="$browsers torbrowser"
+fi
+
+if echo "$browsers" | grep -qs " " ; then
+    ans=$(zenity --list --text "Which browser?" --column x --hide-header --width 360 --height 320 $browsers 2>/dev/null)
+else
+    ans="$browsers"
+fi
+
+if [ -z "$ans" ] ; then echo "Empty answer" ; exit ; fi
+echo "Launching with $ans"
+exec $ans $@
