@@ -1,0 +1,26 @@
+#!/bin/bash
+
+device="/sys/class/backlight/intel_backlight"
+interval=40
+min=1
+read max <$device/max_brightness
+
+case $1 in
+    "up")
+        read current <$device/brightness
+        new=$((current+interval))
+        ;;
+    "down")
+        read current <$device/brightness
+        new=$((current-interval))
+        ;;
+    *)
+        echo "Usage: $0 up|down"
+        exit 1
+        ;;
+esac
+
+[ $new -lt $min ] && new=$min
+[ $new -gt $max ] && new=$max
+echo $new >$device/brightness
+echo "old=$current interval=$interval new=$new min=$min max=$max"
