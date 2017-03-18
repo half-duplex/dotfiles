@@ -34,15 +34,7 @@ for each in $zonelist ; do
         echo "\$INCLUDE $ZSK.key ; ZSK" >>db.$each
     fi
 
-    # Increment serial
-    # Not needed since -N unixtime became available
-    #oldserial=$(grep '; serial' db.$each | awk '{print $1}')
-    #newserial=$(($oldserial+1))
-    #sed -e "s/$oldserial/$newserial/" -i db.$each
-
     $signzone -N unixtime -3 `uuidgen -r | sed -e 's/-//g'` -o $each db.$each
 done
 
-#/usr/bin/service bind9 reload
 /usr/bin/systemctl reload named
-
