@@ -47,7 +47,7 @@ end
 beautiful.init("~/.config/awesome/theme/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "urxvt"
+terminal = "termite"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -61,8 +61,8 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
 {
---  awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
+    awful.layout.suit.fair,
+--  awful.layout.suit.fair.horizontal,
     awful.layout.suit.tile,
     awful.layout.suit.tile.bottom,
 --  awful.layout.suit.tile.left,
@@ -109,8 +109,8 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "firefox", "firefox" },
                                     { "thunar", "thunar" },
                                     { "spotify", "spotify" },
-                                    { "lock", "bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"" },
-                                    { "run", function() mypromptbox[mouse.screen]:run() end }
+                                    { "lock", "bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 0000FF -n\"" },
+                                    { "run", function() mypromptbox[mouse.screen.index]:run() end }
                                   }
                         })
 
@@ -138,7 +138,7 @@ ramwidget:set_color("#22dd11")
 vicious.register(ramwidget, vicious.widgets.mem, "$1")
 
 -- Create a textclock widget
-mytextclock = awful.widget.textclock()
+mytextclock = awful.widget.textclock() --format="%a %m-%d %H:%M:%S")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -289,36 +289,39 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+    awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen.index]:run() end),
 
     -- Menubar
     awful.key({ modkey }, "s", function() menubar.show() end),
 
     -- Hotkeys
-    awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol"                                 ) end),
+    awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol") end),
     awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"") end),
     awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000 -n\"") end),
-    awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/desktop/ 2>/dev/null'"     ) end),
-    awful.key({ modkey,           }, "Print" , function () awful.util.spawn("imgur-screenshot"                            ) end),
-    awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar"                                      ) end),
+    awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/desktop/ --backup=t 2>/dev/null'"     ) end),
+    awful.key({ modkey,           }, "Print" , function () awful.util.spawn("imgur-screenshot") end),
+    awful.key({ modkey, "Shift"   }, "Print" , function () awful.util.spawn("imgur-screenshot -e") end),
+    awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar") end),
 
+    awful.key({},         "XF86MonBrightnessUp",   function () os.execute("backlight up") end),
+    awful.key({},         "XF86MonBrightnessDown", function () os.execute("backlight down") end),
     awful.key({},         "XF86AudioMute"       , function () os.execute("volctl mute") end),
     awful.key({},         "XF86AudioLowerVolume", function () os.execute("volctl down") end),
     awful.key({},         "XF86AudioRaiseVolume", function () os.execute("volctl up") end),
-    awful.key({ modkey }, "XF86AudioMute"       , function () os.execute("spotify-hotkey-sender.sh volmute") end),
-    awful.key({ modkey }, "XF86AudioLowerVolume", function () os.execute("spotify-hotkey-sender.sh voldown") end),
-    awful.key({ modkey }, "XF86AudioRaiseVolume", function () os.execute("spotify-hotkey-sender.sh volup") end),
-    awful.key({ modkey }, "XF86AudioPlay",        function () os.execute("spotify-hotkey-sender.sh play") end),
-    awful.key({ modkey }, "XF86AudioNext",        function () os.execute("spotify-hotkey-sender.sh next") end),
-    awful.key({ modkey }, "XF86AudioPrev",        function () os.execute("spotify-hotkey-sender.sh prev") end),
-    awful.key({},         "XF86AudioPlay",        function () os.execute("spotify-hotkey.sh play") end),
-    awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey.sh next") end),
-    awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end),
+    -- awful.key({ modkey }, "XF86AudioMute"       , function () os.execute("spotify-hotkey-sender.sh volmute") end),
+    -- awful.key({ modkey }, "XF86AudioLowerVolume", function () os.execute("spotify-hotkey-sender.sh voldown") end),
+    -- awful.key({ modkey }, "XF86AudioRaiseVolume", function () os.execute("spotify-hotkey-sender.sh volup") end),
+    -- awful.key({ modkey }, "XF86AudioPlay",        function () os.execute("spotify-hotkey-sender.sh play") end),
+    -- awful.key({ modkey }, "XF86AudioNext",        function () os.execute("spotify-hotkey-sender.sh next") end),
+    -- awful.key({ modkey }, "XF86AudioPrev",        function () os.execute("spotify-hotkey-sender.sh prev") end),
+    -- awful.key({},         "XF86AudioPlay",        function () os.execute("spotify-hotkey.sh play") end),
+    -- awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey.sh next") end),
+    -- awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end),
     awful.key({ modkey, "Shift" }, "a",         function () os.execute("setxkbmap dvorak") end),
     awful.key({ modkey, "Shift" }, "m",         function () os.execute("setxkbmap us") end),
     -- Open window list
     awful.key({ modkey,         }, "w",         function ()
-        awful.menu.clients({ width= 350 }, { keygrabber=true }) end)
+        awful.menu.clients({ width=450 }, { keygrabber=true }) end)
 )
 
 clientkeys = awful.util.table.join(
@@ -364,28 +367,28 @@ for i = 1, keynumber do
     globalkeys = awful.util.table.join(globalkeys,
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
-                        local screen = mouse.screen
+                        local screen = mouse.screen.index
                         if tags[screen][i] then
                             awful.tag.viewonly(tags[screen][i])
                         end
                   end),
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
-                      local screen = mouse.screen
+                      local screen = mouse.screen.index
                       if tags[screen][i] then
                           awful.tag.viewtoggle(tags[screen][i])
                       end
                   end),
         awful.key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus and tags[client.focus.screen][i] then
-                          awful.client.movetotag(tags[client.focus.screen][i])
+                      if client.focus and tags[client.focus.screen.index][i] then
+                          awful.client.movetotag(tags[client.focus.screen.index][i])
                       end
                   end),
         awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus and tags[client.focus.screen][i] then
-                          awful.client.toggletag(tags[client.focus.screen][i])
+                      if client.focus and tags[client.focus.screen.index][i] then
+                          awful.client.toggletag(tags[client.focus.screen.index][i])
                       end
                   end))
 end
@@ -403,7 +406,7 @@ root.keys(globalkeys)
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
-      properties = { border_width = 0, -- = beautiful.border_width,
+      properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
                      keys = clientkeys,
@@ -424,6 +427,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "SC2.exe" },
       properties = { floating = true } },
+    { rule = { class = "Tor Browser" },
+      properties = { floating = true } },
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
@@ -433,14 +438,6 @@ awful.rules.rules = {
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function (c, startup)
-    -- Enable sloppy focus
---  c:connect_signal("mouse::enter", function(c)
---      if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
---          and awful.client.focus.filter(c) then
---          client.focus = c
---      end
---  end)
-
     if not startup then
         -- Set the windows at the slave,
         -- i.e. put it at the end of others instead of setting it master.

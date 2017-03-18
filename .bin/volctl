@@ -1,5 +1,6 @@
 #!/bin/bash
 device="alsa_output.pci-0000_00_1b.0.analog-stereo"
+device="0"
 case "$1" in
     "up")
         pacmd dump | awk --non-decimal-data '$1~/set-sink-volume/{if ($2~/'${device}'/) {if ($3+3500 > 65535) {system ("pactl "$1" '${device}' "65535)} else {system ("pactl "$1" '${device}' "$3+3500)}}}'
