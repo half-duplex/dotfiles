@@ -1,16 +1,16 @@
 #!/bin/sh
 
-[ -f ~/.xprofile.local ] && . ~/.xprofile.local
+[ -f ~/.profile ] && . ~/.profile
+[ -f $XDG_CONFIG_HOME/xprofile.local ] && . $XDG_CONFIG_HOME/xprofile.local
 
-if [ -f $HOME/.xmodmap ]; then
-    xmodmap $HOME/.xmodmap
+if [ -f $XDG_CONFIG_HOME/xmodmap ]; then
+    xmodmap $XDG_CONFIG_HOME/xmodmap
 fi
-if [ -f $HOME/.Xresources ]; then
-    xrdb -merge $HOME/.Xresources
+if [ -f "$XDG_CONFIG_HOME/xresources" ]; then
+    xrdb -merge "$XDG_CONFIG_HOME/xresources"
 fi
-
-if [ -d "$HOME/.bin" ] ; then
-    export PATH="$HOME/.bin:$PATH"
+if [ -f "$XDG_CONFIG_HOME/xresources.local" ]; then
+    xrdb -merge "$XDG_CONFIG_HOME/xresources.local"
 fi
 
 nitrogen --restore &
@@ -24,3 +24,4 @@ fi
 #fi
 
 export MOZ_USE_XINPUT2=1
+export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"

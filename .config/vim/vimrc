@@ -1,3 +1,19 @@
+set undodir=$XDG_CACHE_HOME/vim/undo
+set directory=$XDG_CACHE_HOME/vim/swap
+set backupdir=$XDG_CACHE_HOME/vim/backup
+set viminfo+='1000,n$XDG_CACHE_HOME/vim/viminfo
+set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIMRUNTIME
+
+if !isdirectory(&undodir)
+    call mkdir(&undodir, "p")
+endif
+if !isdirectory(&directory)
+    call mkdir(&directory, "p")
+endif
+if !isdirectory(&backupdir)
+    call mkdir(&backupdir, "p")
+endif
+
 runtime bundle/vim-pathogen/autoload/pathogen.vim
 silent! execute pathogen#infect()
 silent! execute pathogen#helptags()
