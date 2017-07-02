@@ -297,6 +297,7 @@ globalkeys = awful.util.table.join(
     -- Hotkeys
     awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol") end),
     awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"") end),
+    awful.key({          }, "XF86OfficeHome" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 0000FF -n\"") end),
     awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000 -n\"") end),
     awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/desktop/ --backup=t 2>/dev/null'"     ) end),
     awful.key({ modkey,           }, "Print" , function () awful.util.spawn("imgur-screenshot") end),
@@ -317,8 +318,12 @@ globalkeys = awful.util.table.join(
     -- awful.key({},         "XF86AudioPlay",        function () os.execute("spotify-hotkey.sh play") end),
     -- awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey.sh next") end),
     -- awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end),
+    --
+    awful.key({ modkey,         }, "F7",        function () os.execute("locksuspend") end),
+
     awful.key({ modkey, "Shift" }, "a",         function () os.execute("setxkbmap dvorak") end),
     awful.key({ modkey, "Shift" }, "m",         function () os.execute("setxkbmap us") end),
+
     -- Open window list
     awful.key({ modkey,         }, "w",         function ()
         awful.menu.clients({ width=450 }, { keygrabber=true }) end)
