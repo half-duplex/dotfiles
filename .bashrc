@@ -11,7 +11,7 @@ PS1='[\u@\h \W]\$ '
 # Migrate history file to XDG-compliant location
 oldhistfile="$HISTFILE"
 HISTFILE="${XDG_DATA_HOME}/bash/history"
-[ -e "$oldhistfile" ] && mkdir -p $(dirname "$HISTFILE") && mv "$oldhistfile" "$HISTFILE"
+[ ! -e "$HISTFILE" ] && mkdir -p $(dirname "$HISTFILE") && mv "$oldhistfile" "$HISTFILE"
 unset oldhistfile
 
 HISTFILESIZE=2500
