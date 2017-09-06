@@ -60,7 +60,7 @@ noremap H ^
 noremap L $
 
 " save and run (requires shebang and +x)
-map <F5> <Esc>:w<CR>:!clear<CR>:! time ./%<CR>
+map <F8> <Esc>:w<CR>:!clear<CR>:! time ./%<CR>
 
 " scroll before reaching edge
 set scrolloff=8 " Number of lines from vertical edge to start scrolling
