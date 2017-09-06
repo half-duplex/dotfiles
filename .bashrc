@@ -5,7 +5,6 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-alias ls='ls --color=auto'
 PS1='[\u@\h \W]\$ '
 
 # Migrate history file to XDG-compliant location
@@ -14,7 +13,9 @@ HISTFILE="${XDG_DATA_HOME}/bash/history"
 [ ! -e "$HISTFILE" ] && mkdir -p $(dirname "$HISTFILE") && mv "$oldhistfile" "$HISTFILE"
 unset oldhistfile
 
-HISTFILESIZE=2500
+HISTSIZE=5000
+HISTCONTROL="ignoreboth"
+HISTTIMEFORMAT="%Y.%m.%d %T "
 export EDITOR="vim"
 export VISUAL="$EDITOR"
 
@@ -26,8 +27,10 @@ if [ -f "$XDG_CONFIG_HOME/bash/aliases" ]; then
     . "$XDG_CONFIG_HOME/bash/aliases"
 fi
 
-[ -n "`which ix 2>/dev/null`" ] || alias ix="curl -F 'f:1=<-' ix.io"
-password(){ len=${1:-16};ct=${2:-1};tr -cd "[:alnum:]"</dev/urandom|fold -w"$len"|head -n"$ct";}
+which ix &>/dev/null || alias ix="curl -F 'f:1=<-' ix.io"
+badpassword(){ len=${1:-32};ct=${2:-1};tr -cd "[:alnum:]"</dev/urandom|fold -w"$len"|head -n"$ct";}
+# All printable chars that terminals don't count as splitting words
+password(){ len=${1:-32};ct=${2:-1};tr -cd '[:alnum:]\!#$%*+,\-./:=?@\\\]^_`~'</dev/urandom|fold -w"$len"|head -n"$ct";}
 
 if [ -d "$HOME/sources/android/sdk/platform-tools" ] ; then
     export PATH="$PATH:$HOME/sources/android/sdk/platform-tools"
