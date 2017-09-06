@@ -1,3 +1,4 @@
+/swap
 /dev/*
 /proc/*
 /sys/*
@@ -8,6 +9,7 @@
 /lost+found
 /home/*/.gvfs
 /var/lib/pacman/sync/*
+/var/cache/pacman/pkg/*
 /home/*/.thumbnails/*
 /home/*/.mozilla/firefox/*.default/Cache/*
 /home/*/.cache/*

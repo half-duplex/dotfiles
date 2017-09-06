@@ -5,7 +5,7 @@ DATAUSER="mal"
 KEEPDAYS=7
 KEEPWEEKS=26 # 26=6mos
 BUDIR="/mnt/bulk/backups"
-ARGS="-aXEhAy --info=progress2 --delete --delete-delay --exclude-from /home/$DATAUSER/.bin/data/backup.exclude.txt"
+ARGS="-aHAEXhyy --numeric-ids --info=progress2 --delete --delete-delay --exclude-from /home/$DATAUSER/.bin/data/backup.exclude.txt"
 
 if [ "`whoami`" != "root" ] ; then
     echo "Need elevation!"
@@ -18,7 +18,7 @@ case $@ in
         exit
         ;;
     all)
-        STUFFTOBU="luca nova eva blake pluto tron"
+        STUFFTOBU="luca nova eva pluto"
         ;;
     *)
         STUFFTOBU="$@"
@@ -26,7 +26,7 @@ case $@ in
 esac
 
 START=$(date +%s)
-SSHARGS="-i /home/$DATAUSER/.ssh/id_rsa -F /home/$DATAUSER/.ssh/config"
+SSHARGS="-F /home/$DATAUSER/.ssh/config"
 
 for butarget in $STUFFTOBU ; do
     echo -n "[Enter] to start $butarget:"
@@ -64,4 +64,3 @@ FINISH=$(date +%s)
 echo " time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds"
 
 df -h $BUDIR
-

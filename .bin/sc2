@@ -1,3 +1,5 @@
 #!/bin/bash
 
+export WINEPREFIX="$HOME/.local/share/wineprefixes/bnet"
+winetricks corefonts vcrun2015
 exec wine Z:\\mnt\\steam-win\\Starcraft\ II\\Starcraft\ II.exe
