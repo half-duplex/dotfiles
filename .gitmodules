@@ -1,3 +1,24 @@
 [submodule ".config/awesome/lain"]
 	path = .config/awesome/lain
 	url = git://github.com/copycat-killer/lain.git
+[submodule ".config/vim/bundle/python-mode"]
+	path = .config/vim/bundle/python-mode
+	url = https://github.com/klen/python-mode.git
+[submodule ".config/vim/bundle/sslsecure.vim"]
+	path = .config/vim/bundle/sslsecure.vim
+	url = https://github.com/chr4/sslsecure.vim.git
+[submodule ".config/vim/bundle/vdebug"]
+	path = .config/vim/bundle/vdebug
+	url = https://github.com/joonty/vdebug.git
+[submodule ".config/vim/bundle/vim-bracketed-paste"]
+	path = .config/vim/bundle/vim-bracketed-paste
+	url = https://github.com/ConradIrwin/vim-bracketed-paste
+[submodule ".config/vim/bundle/vim-css-color"]
+	path = .config/vim/bundle/vim-css-color
+	url = https://github.com/ap/vim-css-color.git
+[submodule ".config/vim/bundle/vim-git"]
+	path = .config/vim/bundle/vim-git
+	url = https://github.com/tpope/vim-git.git
+[submodule ".config/vim/bundle/vim-pathogen"]
+	path = .config/vim/bundle/vim-pathogen
+	url = https://github.com/tpope/vim-pathogen.git
