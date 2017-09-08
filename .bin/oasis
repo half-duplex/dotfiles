@@ -1,4 +1,0 @@
-#!/bin/bash
-
-exec telnet 108.171.162.192 256
-

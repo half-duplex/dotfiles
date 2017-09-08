@@ -1,6 +1,0 @@
-#!/bin/bash
-
-THREADS=$1
-shift
-
-aria2c -j $THREADS -c -s $THREADS $@
