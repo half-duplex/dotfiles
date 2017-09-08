@@ -52,10 +52,6 @@ cmap w!! %!sudo tee > /dev/null %
 " ex mode commands made easy
 nnoremap ; :
 
-" absolute line numbers in insert mode, relative otherwise for easy movement
-au InsertEnter * :set nu
-au InsertLeave * :set rnu
-
 noremap H ^
 noremap L $
 
