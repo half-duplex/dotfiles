@@ -1,10 +1,12 @@
 #!/bin/sh
 
 [ -f ~/.profile ] && . ~/.profile
-[ -f $XDG_CONFIG_HOME/xprofile.local ] && . $XDG_CONFIG_HOME/xprofile.local
+[ -f "$XDG_CONFIG_HOME/xprofile.local" ] && . "$XDG_CONFIG_HOME/xprofile.local"
 
-if [ -f $XDG_CONFIG_HOME/xmodmap ]; then
-    xmodmap $XDG_CONFIG_HOME/xmodmap
+if [ -f "$XDG_CONFIG_HOME/xmodmap" ]; then
+    xmodmap "$XDG_CONFIG_HOME/xmodmap"
+else
+    /usr/bin/echo "$XDG_CONFIG_HOME/xmodmap not found" >/home/mal/xmodmaptest
 fi
 if [ -f "$XDG_CONFIG_HOME/xresources" ]; then
     xrdb -merge "$XDG_CONFIG_HOME/xresources"
@@ -25,3 +27,11 @@ fi
 
 export MOZ_USE_XINPUT2=1
 export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"
+
+export CL_PROPERTIES="$XDG_CONFIG_HOME/clion/config/idea.properties"
+export PYCHARM_PROPERTIES="$XDG_CONFIG_HOME/pycharm/config/idea.properties"
+export DATAGRIP_PROPERTIES="$XDG_CONFIG_HOME/datagrip/config/idea.properties"
+export STUDIO_PROPERTIES="$XDG_CONFIG_HOME/studio/config/idea.properties"
+export WEBIDE_PROPERTIES="$XDG_CONFIG_HOME/webide/config/idea.properties"
+export PHPSTORM_PROPERTIES="$XDG_CONFIG_HOME/phpstorm/config/idea.properties"
+export YOURKIT_HOME="$XDG_CACHE_HOME/yourkitjava"
