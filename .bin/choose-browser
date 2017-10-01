@@ -1,8 +1,25 @@
 #!/bin/bash
 
+if which firefox-developer ; then
+    default="firefox-developer"
+else
+    default="firefox"
+fi
+echo "default: $default"
+
 # always available
-#browsers="firefox chromium google-chrome-stable torbrowser"
-browsers="firefox"
+#browsers="firefox-developer firefox chromium google-chrome-stable torbrowser"
+browsers=""
+
+if pgrep -u "$USER" -f "/opt/firefox-developer/firefox" ; then
+    echo "firefox-developer available"
+    browsers="$browsers firefox-developer"
+fi
+
+if pgrep -u "$USER" -f "/usr/lib/firefox/firefox" ; then
+    echo "firefox available"
+    browsers="$browsers firefox"
+fi
 
 if pgrep -xu "$USER" "chromium" ; then
     echo "chromium available"
@@ -19,10 +36,14 @@ if pgrep -u "$USER" -f "firefox .*--class Tor Browser.*" ; then
     browsers="$browsers torbrowser"
 fi
 
-if echo "$browsers" | grep -qs " " ; then
-    ans=$(zenity --list --text "Which browser?" --column x --hide-header --width 360 --height 320 $browsers 2>/dev/null)
+if [ -z "$browsers" ] ; then # if no browsers already running
+    ans="$default"
 else
-    ans="$browsers"
+    if echo "$browsers" | grep -qsE " .* " ; then # if multiple options
+        ans=$(zenity --list --text "Which browser?" --column x --hide-header --width 360 --height 320 $browsers 2>/dev/null)
+    else # only one option
+        ans="$browsers"
+    fi
 fi
 
 if [ -z "$ans" ] ; then echo "Empty answer" ; exit ; fi
