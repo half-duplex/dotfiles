@@ -18,7 +18,7 @@ case $@ in
         exit
         ;;
     all)
-        STUFFTOBU="luca nova eva pluto"
+        STUFFTOBU="luca nova mars"
         ;;
     *)
         STUFFTOBU="$@"
@@ -38,11 +38,8 @@ for butarget in $STUFFTOBU ; do
         luca)
             rsync $ARGS / $BUDIR/$butarget/$now/ $hl
             ;;
-        nova|eva|blake|pluto)
+        nova|blake|mars|xps)
             rsync -4 $ARGS -z -e "ssh $SSHARGS" root@${butarget}.sec.gd:/ $BUDIR/$butarget/$now/ $hl
-            ;;
-        tron)
-            rsync -4 $ARGS -z -e "ssh $SSHARGS" root@tron.disruptivelabs.org:/ $BUDIR/$butarget/$now/ $hl
             ;;
         *)
             echo "Invalid backup target!"
