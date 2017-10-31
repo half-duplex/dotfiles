@@ -5,6 +5,7 @@
 /tmp/*
 /run/*
 /mnt/*
+/data/*
 /media/*
 /lost+found
 /home/*/.gvfs
