@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# On most devices probably requires:
+# /etc/udev/rules.d/99-backlight.rules
+# SUBSYSTEM=="backlight", RUN+="/usr/bin/chgrp video /sys/class/backlight/%k/brightness", RUN+="/usr/bin/chmod g+rw /sys/class/backlight/%k/brightness"
+
 device="/sys/class/backlight/intel_backlight"
 interval=40
 min=1
