@@ -1,30 +1,67 @@
-#!/bin/bash
+#!/usr/bin/env python
+
+# Manage backlight brightness logarthmically so one step at min and one step at max are perceptually similar
 
 # On most devices probably requires:
 # /etc/udev/rules.d/99-backlight.rules
-# SUBSYSTEM=="backlight", RUN+="/usr/bin/chgrp video /sys/class/backlight/%k/brightness", RUN+="/usr/bin/chmod g+rw /sys/class/backlight/%k/brightness"
+# SUBSYSTEM=="backlight", RUN+="/usr/bin/chgrp video /sys/class/backlight/%k/brightness", \
+#       RUN+="/usr/bin/chmod g+rw /sys/class/backlight/%k/brightness"
 
-device="/sys/class/backlight/intel_backlight"
-interval=40
-min=1
-read max <$device/max_brightness
+from __future__ import print_function
+from sys import argv
 
-case $1 in
-    "up")
-        read current <$device/brightness
-        new=$((current+interval))
-        ;;
-    "down")
-        read current <$device/brightness
-        new=$((current-interval))
-        ;;
-    *)
-        echo "Usage: $0 up|down"
-        exit 1
-        ;;
-esac
+device = "/sys/class/backlight/intel_backlight"
+interval = 60
+lmin_phy = 50
+gamma = 4.0
 
-[ $new -lt $min ] && new=$min
-[ $new -gt $max ] && new=$max
-echo $new >$device/brightness
-echo "old=$current interval=$interval new=$new min=$min max=$max"
+
+def expand(lin, lmax):
+    return round(((lin/lmax)**(1/gamma))*1000)
+
+
+def compress(lin, lmax):
+    return round(((lin/1000)**gamma)*lmax)
+
+
+def get_brightness():
+    with open(device+"/brightness", "r") as fh:
+        return int(fh.read().strip('\r\n'))
+
+
+def set_brightness(new):
+    with open(device+"/brightness", "w") as fh:
+        fh.write(str(new))
+
+
+with open(device+"/max_brightness", "r") as fh:
+    lmax_phy = int(fh.read().strip('\r\n'))
+
+current_phy = get_brightness()
+current = expand(current_phy, lmax_phy)
+
+if len(argv) > 1 and argv[1] == "up":
+    new = current + interval
+elif len(argv) > 1 and argv[1] == "down":
+    new = current - interval
+elif len(argv) > 1 and argv[1] == "get":
+    print(current)
+    exit(0)
+elif len(argv) > 1 and argv[1].isnumeric():
+    new = int(argv[1])
+else:
+    print("Usage: {} up|down|get|#".format(argv[0]))
+    exit(1)
+
+new_phy = compress(new, lmax_phy)
+
+if new_phy > lmax_phy:
+    new_phy = lmax_phy
+elif new_phy < lmin_phy:
+    new_phy = lmin_phy
+
+set_brightness(new_phy)
+
+
+print("delta_phy={} old_phy={} old={} interval={} new={} new_phy={} min={} max={}"
+      .format(new_phy-current_phy, current_phy, current, interval, new, new_phy, lmin_phy, lmax_phy))
