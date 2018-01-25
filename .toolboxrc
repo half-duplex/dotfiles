@@ -1,3 +1,0 @@
-# I'm not aware of any way to relocate this file
-# Required until JB fixes whatever is breaking toolbox without this option
-export QTWEBENGINE_DISABLE_SANDBOX=true
