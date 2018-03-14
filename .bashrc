@@ -8,10 +8,12 @@
 PS1='[\u@\h \W]\$ '
 
 # Migrate history file to XDG-compliant location
-oldhistfile="$HISTFILE"
-HISTFILE="${XDG_DATA_HOME}/bash/history"
-[ ! -e "$HISTFILE" ] && mkdir -p $(dirname "$HISTFILE") && mv "$oldhistfile" "$HISTFILE"
-unset oldhistfile
+if [ -n "$XDG_DATA_HOME" ] ; then
+    oldhistfile="$HISTFILE"
+    HISTFILE="${XDG_DATA_HOME}/bash/history"
+    [ ! -e "$HISTFILE" ] && mkdir -p $(dirname "$HISTFILE") && mv "$oldhistfile" "$HISTFILE"
+    unset oldhistfile
+fi
 
 HISTSIZE=5000
 HISTCONTROL="ignoreboth"
