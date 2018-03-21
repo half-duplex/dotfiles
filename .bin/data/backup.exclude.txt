@@ -9,6 +9,7 @@
 /media/*
 /lost+found
 /home/*/.gvfs
+/var/tmp/*
 /var/lib/pacman/sync/*
 /var/cache/pacman/pkg/*
 /home/*/.thumbnails/*
