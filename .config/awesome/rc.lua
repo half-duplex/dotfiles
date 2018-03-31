@@ -315,9 +315,9 @@ globalkeys = awful.util.table.join(
     -- awful.key({ modkey }, "XF86AudioPlay",        function () os.execute("spotify-hotkey-sender.sh play") end),
     -- awful.key({ modkey }, "XF86AudioNext",        function () os.execute("spotify-hotkey-sender.sh next") end),
     -- awful.key({ modkey }, "XF86AudioPrev",        function () os.execute("spotify-hotkey-sender.sh prev") end),
-    -- awful.key({},         "XF86AudioPlay",        function () os.execute("spotify-hotkey.sh play") end),
-    -- awful.key({},         "XF86AudioNext",        function () os.execute("spotify-hotkey.sh next") end),
-    -- awful.key({},         "XF86AudioPrev",        function () os.execute("spotify-hotkey.sh prev") end),
+    -- awful.key({},         "XF86AudioPlay",        function () os.execute("media-hotkey play") end),
+    awful.key({},         "XF86AudioNext",        function () os.execute("media-hotkey next") end),
+    -- awful.key({},         "XF86AudioPrev",        function () os.execute("media-hotkey prev") end),
     --
     awful.key({ modkey,         }, "F7",        function () os.execute("locksuspend") end),
 

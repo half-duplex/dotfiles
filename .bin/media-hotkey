@@ -1,0 +1,47 @@
+#!/bin/sh
+
+pgrep spotify >/dev/null && player='spotify'
+pgrep -f 'Google Play Music Desktop Player' >/dev/null && player='gpmdp'
+
+echo "Player: $player"
+case $player in
+    "gpmdp")
+        case $1 in
+            "play"|"pause")
+                gpmdp-cli 'playback playPause'
+                ;;
+            "next")
+                gpmdp-cli 'playback forward'
+                ;;
+            "prev")
+                gpmdp-cli 'playback rewind'
+                ;;
+            *)
+                echo "Usage: $0 play|next|prev"
+                exit 1
+                ;;
+        esac
+        ;;
+    "spotify")
+        x="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player"
+        case $1 in
+            "play"|"pause")
+                ${x}.PlayPause
+                ;;
+            "next")
+                ${x}.Next
+                ;;
+            "prev")
+                ${x}.Previous
+                ;;
+            *)
+                echo "Usage: $0 play|next|prev"
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        echo "Couldn't find media player"
+        exit 4
+        ;;
+esac
