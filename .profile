@@ -8,6 +8,7 @@ fi
 
 export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 export GVIMINIT=":source $XDG_CONFIG_HOME/vim/gvimrc"
+export KRB5CCNAME="DIR:/tmp/krb5cc_${UID}_d/"
 export LESSHISTFILE="$XDG_CACHE_HOME/lesshst"
 export RANDFILE="$XDG_DATA_HOME/openssl/rnd"
 export TERMINFO="$XDG_DATA_HOME/terminfo"
