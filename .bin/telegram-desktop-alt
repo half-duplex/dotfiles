@@ -1,0 +1,3 @@
+#!/bin/bash -ex
+
+exec telegram-desktop -many -workdir "$XDG_DATA_HOME/TelegramDesktopAlt$1/"
