@@ -124,21 +124,21 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- {{{ Wibox
 
 -- Vicious CPU Widget
-cpuwidget = awful.widget.graph()
+cpuwidget = wibox.widget.graph()
 cpuwidget:set_width(15)
 cpuwidget:set_background_color("#222222")
 cpuwidget:set_color("#0060FF")
 vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
 
 -- Vicious RAM Widget
-ramwidget = awful.widget.graph()
+ramwidget = wibox.widget.graph()
 ramwidget:set_width(15)
 ramwidget:set_background_color("#222222")
 ramwidget:set_color("#22dd11")
 vicious.register(ramwidget, vicious.widgets.mem, "$1")
 
 -- Create a textclock widget
-mytextclock = awful.widget.textclock() --format="%a %m-%d %H:%M:%S")
+mytextclock = wibox.widget.textclock() --format="%a %m-%d %H:%M:%S")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -206,7 +206,7 @@ for s = 1, screen.count() do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s })
+    mywibox[s] = awful.wibar({ position = "top", screen = s })
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
@@ -342,11 +342,7 @@ clientkeys = awful.util.table.join(
             -- minimized, since minimized clients can't have the focus.
             c.minimized = true
         end),
-    awful.key({ modkey,           }, "m",
-        function (c)
-            c.maximized_horizontal = not c.maximized_horizontal
-            c.maximized_vertical   = not c.maximized_vertical
-        end),
+    awful.key({ modkey,           }, "m",      function (c) c.maximized = not c.maximized    end),
     -- Move windows
     awful.key({ modkey, "Shift"   }, "Up",    function () awful.client.moveresize(  0, -20,   0,   0) end),
     awful.key({ modkey, "Shift"   }, "Down",  function () awful.client.moveresize(  0,  20,   0,   0) end),
