@@ -1,0 +1,7 @@
+#!/bin/bash -ex
+
+cd ~/.cache/pacaur
+for x in * ; do echo $x ; ls $x/*.pkg.tar.xz 2>/dev/null | sort -h | head -n -2 | xargs rm || true ; done
+rm */*.deb */*.rpm */*.zip */*.tar.gz || true
+find -iname '*.tar.xz' | grep -v '.pkg.tar.xz' | xargs rm || true
+rm -rf */*/
