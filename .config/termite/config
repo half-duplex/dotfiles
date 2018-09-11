@@ -2,6 +2,7 @@
 font = Monospace 9
 #font = Source Code Pro Medium 9
 cursor_blink = off
+fullscreen = false
 browser = choose-browser
 word_chars = abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYS0123456789!#$%*+,-./:=?@]^_`~\
 
