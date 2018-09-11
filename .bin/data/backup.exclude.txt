@@ -16,4 +16,5 @@
 /home/*/.mozilla/firefox/*.default/Cache/*
 /home/*/.cache/*
 /home/*/.local/share/Steam/SteamApps/common/*
+/home/*/.local/share/JetBrains/Toolbox/apps/*
 /home/*/.gameservers/*
