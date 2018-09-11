@@ -4,7 +4,7 @@
 DATAUSER="mal"
 KEEPDAYS=7
 KEEPWEEKS=26 # 26=6mos
-BUDIR="/mnt/bulk/backups"
+BUDIR="/data/backups"
 ARGS="-aHAEXhyy --numeric-ids --info=progress2 --delete --delete-delay --exclude-from /home/$DATAUSER/.bin/data/backup.exclude.txt"
 
 if [ "`whoami`" != "root" ] ; then
@@ -18,7 +18,7 @@ case $@ in
         exit
         ;;
     all)
-        STUFFTOBU="luca nova mars"
+        STUFFTOBU="xps nova eris mars zuma luca"
         ;;
     *)
         STUFFTOBU="$@"
@@ -38,8 +38,8 @@ for butarget in $STUFFTOBU ; do
         luca)
             rsync $ARGS / $BUDIR/$butarget/$now/ $hl
             ;;
-        nova|blake|mars|xps)
-            rsync -4 $ARGS -z -e "ssh $SSHARGS" root@${butarget}.sec.gd:/ $BUDIR/$butarget/$now/ $hl
+        nova|blake|mars|xps|eris|zuma)
+            rsync -4 $ARGS -z -e "ssh $SSHARGS" root@${butarget}:/ $BUDIR/$butarget/$now/ $hl
             ;;
         *)
             echo "Invalid backup target!"
