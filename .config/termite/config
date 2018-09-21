@@ -6,36 +6,46 @@ fullscreen = false
 browser = choose-browser
 word_chars = abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYS0123456789!#$%*+,-./:=?@]^_`~\
 
-[colors]
-background = #252525
-foreground = #90b3b3
-
-# x;3y;4z x=style y=fg (colory) z=bg (colorz+8)
-# Black + DarkGrey
-color0  = #5b5b5b
-color8  = #737373
-# DarkRed + Red
-color1  = #9c748f
-color9  = #c392b3
-# DarkGreen + Green
-color2  = #615375
-color10 = #7a6994
-# DarkYellow + Yellow
-color3  = #5d78ab
-color11 = #7496d6
-# DarkBlue + Blue
-color4  = #31548f
-color12 = #3d69b3
-# DarkMangenta + Mangenta
-color5  = #6264e3
-color13 = #6e70ff
-# DarkCyan + Cyan
-color6  = #1f91cc
-color14 = #27b5ff
-# LightGrey + White
-color7  = #90b3b3
-color15 = #b3dede
-
 [hints]
 
+# based on terminal.sexy "base16/eighties.dark"
+[colors]
 
+# special
+foreground      = #d3d0c8
+foreground_bold = #d3d0c8
+cursor          = #d3d0c8
+#background      = #2d2d2d
+background      = #1d1f21
+
+# black
+color0  = #2d2d2d
+color8  = #747369
+
+# red
+color1  = #f2777a
+color9  = #f2777a
+
+# green
+color2  = #99cc99
+color10 = #99cc99
+
+# yellow
+color3  = #ffcc66
+color11 = #ffcc66
+
+# blue
+color4  = #6699cc
+color12 = #6699cc
+
+# magenta
+color5  = #cc99cc
+color13 = #cc99cc
+
+# cyan
+color6  = #66cccc
+color14 = #66cccc
+
+# white
+color7  = #d3d0c8
+color15 = #f2f0ec
