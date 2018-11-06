@@ -126,14 +126,14 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- Vicious CPU Widget
 cpuwidget = wibox.widget.graph()
 cpuwidget:set_width(15)
-cpuwidget:set_background_color("#222222")
+cpuwidget:set_background_color("#1d1f21")
 cpuwidget:set_color("#0060FF")
 vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
 
 -- Vicious RAM Widget
 ramwidget = wibox.widget.graph()
 ramwidget:set_width(15)
-ramwidget:set_background_color("#222222")
+ramwidget:set_background_color("#1d1f21")
 ramwidget:set_color("#22dd11")
 vicious.register(ramwidget, vicious.widgets.mem, "$1")
 

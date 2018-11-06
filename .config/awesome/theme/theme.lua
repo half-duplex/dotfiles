@@ -9,17 +9,17 @@ theme = {}
 --theme.font          = "silkscreen 6"
 theme.font          = "miscfixedsc613 9"
 
-theme.bg_normal     = "#252525"
-theme.fg_normal     = "#90b3b3"
-
-theme.bg_focus      = "#5b5b5b"
-theme.fg_focus      = "#47d5ff"
-
-theme.bg_minimize   = "#252525"
-theme.fg_minimize   = "#31548f"
-
-theme.bg_urgent     = "#ff0000"
+theme.bg_urgent     = "#ee0000"
 theme.fg_urgent     = "#ffffff"
+
+theme.bg_focus      = "#3d3d3d"
+theme.fg_focus      = "#d3d0c8"
+
+theme.bg_normal     = "#1d1f21"
+theme.fg_normal     = "#66cccc"
+
+theme.bg_minimize   = "#1d1f21"
+theme.fg_minimize   = "#6699cc"
 
 theme.bg_systray    = theme.bg_normal
 
