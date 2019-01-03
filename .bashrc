@@ -34,6 +34,7 @@ badpassword(){ len=${1:-32};ct=${2:-1};tr -cd "[:alnum:]"</dev/urandom|fold -w"$
 # All printable chars that terminals don't count as splitting words
 password(){ len=${1:-32};ct=${2:-1};tr -cd '[:alnum:]#%+,\-./=?@\\_~'</dev/urandom|fold -w"$len"|head -n"$ct";}
 mkpin(){ len=${1:-8};ct=${2:-1};tr -cd '[:digit:]'</dev/urandom|fold -w"$len"|head -n"$ct";}
+mktoken(){ len=${1:-12};ct=${2:-1};tr -cd '[:lower:]'</dev/urandom|fold -w"$len"|head -n"$ct";}
 
 if [ -d "$HOME/sources/android/sdk/platform-tools" ] ; then
     export PATH="$PATH:$HOME/sources/android/sdk/platform-tools"
