@@ -5,3 +5,8 @@ for x in * ; do echo $x ; ls $x/*.pkg.tar.xz 2>/dev/null | sort -h | head -n -2 
 rm */*.deb */*.rpm */*.zip */*.tar.gz || true
 find -iname '*.tar.xz' | grep -v '.pkg.tar.xz' | xargs rm || true
 rm -rf */*/
+rm -rf ~/sources/aur/built/{android-studio,eagle}-*
+ls /home/mal/sources/abs/built | sed -re 's/^(.*)(-[^-]+){3}$/\1/' | sort -u | \
+    while read pkg ; do
+        ls /home/mal/sources/abs/built | grep -E "^$pkg(-[^-]+){3}$" | head -n -2
+    done | xargs echo rm
