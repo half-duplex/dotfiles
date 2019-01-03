@@ -1,0 +1,48 @@
+#!/usr/bin/python3 -tt
+
+# KLL Animation Generator
+# CC-BY-SA, mal@sec.gd 2018
+# Generates a cyclic animation of an arbitrary number of colors
+# https://kll.wiki/index.php?title=Animation_Reference
+
+from codecs import decode
+
+# Pride flag, gamma-expanded, doubled for vividness
+colors = [
+        "C70000",
+        "C70000",
+        "FF4400",
+        "FF4400",
+        "FFD900",
+        "FFD900",
+        "003804",
+        "003804",
+        "0012FF",
+        "0012FF",
+        "2E003F",
+        "2E003F",
+        ]
+
+# RGB interpolation rainbow
+#colors = [
+#        "FF0000",
+#        "00FF00",
+#        "0000FF",
+#        ]
+
+pixelfmt = "P[c:{: >-3}%]({},{},{})"
+deccolors = [tuple(map(int, decode(hexcolor, 'hex'))) for hexcolor in colors]
+print("framedelay:8, framestretch, loop, replace:all, pfunc:interp\n")
+
+colorcount = len(colors)
+colorwidth = 100/colorcount
+stepwidth = 2
+
+for colorblock in range(colorcount-1, -1, -1):
+    for step in range(0, int(colorwidth), stepwidth):
+        colorentries = [pixelfmt.format(int((coloridx*colorwidth)+step),*deccolors[(coloridx+colorblock)%colorcount])
+                        for coloridx in range(-1, colorcount+1)]
+        print(", ".join(colorentries), end=";\n")
+    print()
+
+# vim: set ts=8 sw=4 tw=119 et :
