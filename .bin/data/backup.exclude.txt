@@ -17,6 +17,7 @@
 /home/*/.cache/*
 /home/*/library/cached-media/*
 /home/*/.local/share/Steam/SteamApps/common/*
+/home/*/.local/share/Steam/steamapps/common/*
 /home/*/.local/share/JetBrains/Toolbox/apps/*
 /home/*/.local/share/TelegramDesktop*/tdata/*/
 /home/*/.gameservers/*
