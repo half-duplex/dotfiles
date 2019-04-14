@@ -4,9 +4,6 @@
 [submodule ".config/vim/bundle/python-mode"]
 	path = .config/vim/bundle/python-mode
 	url = https://github.com/klen/python-mode.git
-[submodule ".config/vim/bundle/sslsecure.vim"]
-	path = .config/vim/bundle/sslsecure.vim
-	url = https://github.com/chr4/sslsecure.vim.git
 [submodule ".config/vim/bundle/vdebug"]
 	path = .config/vim/bundle/vdebug
 	url = https://github.com/joonty/vdebug.git
