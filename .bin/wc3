@@ -1,3 +1,0 @@
-#!/bin/bash
-
-env WINEPREFIX="/home/mal/.wine" wine C:\\windows\\command\\start.exe /Unix /home/mal/.wine/dosdevices/c:/users/Public/Start Menu/Programs/Eurobattle.net/w3l.my.lnk
