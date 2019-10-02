@@ -21,6 +21,8 @@ if ! pgrep redshift >/dev/null ; then
     redshift &
 fi
 
+xbindkeys -f "$XDG_CONFIG_HOME"/xbindkeys/config
+
 #if ! pgrep -x x11vnc >/dev/null ; then
 #    x11vnc -bg & # fork immediately, otherwise awm startup delay
 #fi
@@ -28,7 +30,7 @@ fi
 export MOZ_USE_XINPUT2=1
 export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"
 
-export CL_PROPERTIES="$XDG_CONFIG_HOME/clion/config/idea.properties"
+export CLION_PROPERTIES="$XDG_CONFIG_HOME/clion/config/idea.properties"
 export PYCHARM_PROPERTIES="$XDG_CONFIG_HOME/pycharm/config/idea.properties"
 export DATAGRIP_PROPERTIES="$XDG_CONFIG_HOME/datagrip/config/idea.properties"
 export STUDIO_PROPERTIES="$XDG_CONFIG_HOME/studio/config/idea.properties"
