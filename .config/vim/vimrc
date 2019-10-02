@@ -70,7 +70,6 @@ set sidescroll=1 " Number of cols to scroll at a time
 let mapleader = ","
 
 " easier to reach Esc
-inoremap ii <Esc>
 inoremap <C-c> <Esc>
 
 " I can type :help on my own, thanks.
