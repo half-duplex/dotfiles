@@ -23,14 +23,14 @@ for each in $zonelist ; do
         echo -e "\tGenerating new KSK..."
         sed -e "s/.*INCLUDE K$each.*//g" -i db.$each
         thiskeyroll=y
-        KSK=`$keygen -3 -r /dev/urandom -a RSASHA512 -b 4096 -n ZONE -f KSK $each 2>&1 | tail -n 1`
+        KSK=`$keygen -3 -a RSASHA512 -b 4096 -n ZONE -f KSK $each 2>&1 | tail -n 1`
         echo "\$INCLUDE $KSK.key ; KSK" >>db.$each
     fi
 
     if [ "x$thiskeyroll" == "xy" ] ; then
         echo -e "\tGenerating new ZSK..."
         sed -r -e 's/(^\$INCLUDE K.*\.key ; ZSK) outgoing$/; expired: \1/g' -e 's/\.key ; ZSK$/.key ; ZSK outgoing/g' -i db.$each
-        ZSK=`$keygen -3 -r /dev/urandom -a RSASHA512 -b 4096 -n ZONE $each 2>&1 | tail -n 1`
+        ZSK=`$keygen -3 -a RSASHA512 -b 4096 -n ZONE $each 2>&1 | tail -n 1`
         echo "\$INCLUDE $ZSK.key ; ZSK" >>db.$each
     fi
 
