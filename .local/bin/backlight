@@ -10,10 +10,24 @@
 from __future__ import print_function
 from sys import argv
 
+import gi
+gi.require_version('Notify', '0.7')
+from gi.repository import GObject, Notify
+
 device = "/sys/class/backlight/intel_backlight"
 interval = 60
 lmin_phy = 50
 gamma = 4.0
+
+
+class Notifier(GObject.Object):
+    def __init__(self):
+        super(Notifier, self).__init__()
+        Notify.init("backlight")
+
+    def send_notification(self, title, text, file_path_to_icon=""):
+        n = Notify.Notification.new(title, text, file_path_to_icon)
+        n.show()
 
 
 def expand(lin, lmax):
@@ -65,3 +79,7 @@ set_brightness(new_phy)
 
 print("delta_phy={} old_phy={} old={} interval={} new={} new_phy={} min={} max={}"
       .format(new_phy-current_phy, current_phy, current, interval, new, new_phy, lmin_phy, lmax_phy))
+
+exit(0)
+notifier = Notifier()
+notifier.send_notification("Backlight", "{}%".format(round(new/10)))
