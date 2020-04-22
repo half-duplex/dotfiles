@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+for ip in `dig +short $1` ; do
+    rdns=$(dig +short -x $ip | grep -v 'in-addr')
+    name=$(timeout 3 nc $ip 6667 </dev/null | head -n1 | sed -re 's/^:([^ ]+) .*/\1/')
+    [ "$name" == "" ] && echo -e "$ip\t$rdns\t[connection failed]" && continue
+    valid=$(openssl s_client -connect "$name":6697 -verify_hostname "$name" \
+        </dev/null 2>/dev/null | grep 'Verify return code' | sed -re 's/.*: //')
+    echo -e "$ip\t$rdns\t$name\t$valid"
+done
