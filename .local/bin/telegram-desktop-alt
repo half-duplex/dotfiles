@@ -5,7 +5,7 @@ if [ -z "$XDG_DATA_HOME" ] ; then
     exit 3
 fi
 
-workdir="$XDG_DATA_HOME/TelegramDesktopAlt$1/"
+workdir="$XDG_DATA_HOME/TelegramDesktop-Alt$1/"
 [ -d "$workdir" ] || mkdir -p $workdir
 
 exec telegram-desktop -many -workdir "$workdir"
