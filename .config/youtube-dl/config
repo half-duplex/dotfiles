@@ -1,0 +1,7 @@
+# --ignore-config
+# --no-mark-watched
+--embed-subs
+--embed-thumbnail
+--add-metadata
+--write-sub
+--write-auto-sub
