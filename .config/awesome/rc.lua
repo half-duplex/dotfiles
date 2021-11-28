@@ -47,7 +47,7 @@ end
 beautiful.init("~/.config/awesome/theme/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "termite"
+terminal = "alacritty"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -273,7 +273,7 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Control" }, "q", awesome.quit),
 
@@ -295,14 +295,14 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "s", function() menubar.show() end),
 
     -- Hotkeys
-    awful.key({ modkey,           }, "p"     , function () awful.util.spawn("pavucontrol") end),
-    awful.key({                   }, "Pause" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"") end),
-    awful.key({          }, "XF86OfficeHome" , function () awful.util.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 0000FF -n\"") end),
-    awful.key({ modkey,           }, "Pause" , function () awful.util.spawn("bash -c \"scrot -e 'mv \\$f ~/.templock.png' && exec i3lock -u -i ~/.templock.png -c 000000 -n\"") end),
-    awful.key({                   }, "Print" , function () awful.util.spawn("scrot -e 'mv $f ~/desktop/ --backup=t 2>/dev/null'"     ) end),
-    awful.key({ modkey,           }, "Print" , function () awful.util.spawn("imgur-screenshot") end),
-    awful.key({ modkey, "Shift"   }, "Print" , function () awful.util.spawn("imgur-screenshot -e") end),
-    awful.key({ modkey,           }, "e"     , function () awful.util.spawn("thunar") end),
+    awful.key({ modkey,           }, "p"     , function () awful.spawn("pavucontrol") end),
+    awful.key({                   }, "Pause" , function () awful.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 000000 -n\"") end),
+    awful.key({          }, "XF86OfficeHome" , function () awful.spawn("bash -c \"exec i3lock -u -i ~/library/pictures/lockscreen.png -c 0000FF -n\"") end),
+    awful.key({ modkey,           }, "Pause" , function () awful.spawn("bash -c \"scrot -e 'mv \\$f ~/.scrot.png' && exec i3lock -u -i ~/.scrot.png -c 000000 -n ; rm ~/.scrot.png\"") end),
+    awful.key({                   }, "Print" , function () awful.spawn("scrot -e 'mv $f ~/desktop/ --backup=t 2>/dev/null'"     ) end),
+    awful.key({ modkey,           }, "Print" , function () awful.spawn("bash -c \"sleep 0.1;scrot ~/.scrot.png -fos -e 'xclip -selection c -t image/png <\\$f;rm -f ~/.scrot.png'\"") end),
+    awful.key({ modkey, "Shift"   }, "Print" , function () awful.spawn("imgur-screenshot -e") end),
+    awful.key({ modkey,           }, "e"     , function () awful.spawn("thunar") end),
 
     awful.key({},         "XF86MonBrightnessUp",   function () os.execute("backlight up") end),
     awful.key({},         "XF86MonBrightnessDown", function () os.execute("backlight down") end),
@@ -430,6 +430,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Tor Browser" },
       properties = { floating = true } },
+    { rule = { class = "Ghidra", requests_no_titlebar = true },
+      properties = { floating = true } },
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
@@ -501,12 +503,12 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 do
   local cmds = {}
   for _,i in pairs(cmds) do
-    awful.util.spawn(i)
+    awful.spawn(i)
   end
 end
 
 -- disable startup-notification globally
-local oldspawn = awful.util.spawn
-awful.util.spawn = function (s)
+local oldspawn = awful.spawn
+awful.spawn = function (s)
   oldspawn(s, false)
 end
