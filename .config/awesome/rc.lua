@@ -430,6 +430,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Tor Browser" },
       properties = { floating = true } },
+    { rule = { class = "Toggl Desktop" },
+      properties = { floating = true } },
     { rule = { class = "Ghidra", requests_no_titlebar = true },
       properties = { floating = true } },
     -- Set Firefox to always map on tags number 2 of screen 1.
